@@ -76,6 +76,15 @@ class Cross:
         final=txts.merge(df)
         return final
 
+    def clues(self):
+        table=self.soup.find('table',attrs={'class':'print-nobreak'})
+        tds=table.findAll('td')
+        txt=[]
+        for t in tds:
+            txt.append(t.get_text())
+        hor=txt[0].split('\n')
+        ver=txt[2].split('\n')
+        return hor,ver
 
     def build_df(self,url):
         # row=[None,]*20
@@ -117,6 +126,21 @@ class Cross:
             go = builder.build()
             # uses the gridOptions dictionary to configure AgGrid behavior.
             AgGrid(df, gridOptions=go)
+            hor,ver=self.clues()
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.header("מאוזן")
+                for h in hor:
+                    st.write(h)
+
+            with col2:
+                st.header("מאונך")
+                for v in ver:
+                    st.write(v)
+
+
         # grid_return = AgGrid(df, editable=True)
         # new_df = grid_return['data']
         # new_df
