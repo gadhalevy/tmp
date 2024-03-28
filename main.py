@@ -82,8 +82,8 @@ class Cross:
         txt=[]
         for t in tds:
             txt.append(t.get_text())
-        hor=txt[0].split('\n')
-        ver=txt[2].split('\n')
+        hor=txt[0].split('\n')[3:]
+        ver=txt[2].split('\n')[3:]
         return hor,ver
 
     def build_df(self,url):
@@ -109,10 +109,18 @@ class Cross:
                 col_count+=1
             row_count+=1
         fliped=np.fliplr(tmp)
-        df=pd.DataFrame(fliped,columns=[str(i) for i in range(20)])
+        lst=[str(i) for i in range(20)]
+        df=pd.DataFrame(fliped,columns=lst,index=lst)
         return df
 
-
+    def extract_def(self,lst,slide):
+        nums=[h[:3] for h in lst if h[:3].strip().replace('.','').isdigit()]
+        nums.insert(0,'0')
+        choose=st.select_slider('בחר הגדרה',options=nums,value='0')
+        if choose!='0':
+            txt=[h for h in lst if h.strip().startswith(choose)]
+            return txt[0]
+        return 'בחר הגדרה'
 
 
     def main(self):
@@ -120,25 +128,57 @@ class Cross:
         st.write('https://geek.co.il/~mooffie/crossword')
         url=st.text_input('כתוב את כתובת התשבץ')
         if url:
-            df=self.build_df(url)
-            builder = GridOptionsBuilder.from_dataframe(df)
-            builder.configure_columns(column_names=[str(i) for i in range(20)],  width=35,editable=True)
-            go = builder.build()
-            # uses the gridOptions dictionary to configure AgGrid behavior.
-            AgGrid(df, gridOptions=go)
+            tashbets=self.build_df(url)
+            tashbets
+            df=self.make_df(url)
+            df
+
+            # builder = GridOptionsBuilder.from_dataframe(df)
+            # builder.configure_columns(column_names=[str(i) for i in range(20)],  width=35,editable=True)
+            # go = builder.build()
+            # # uses the gridOptions dictionary to configure AgGrid behavior.
+            # AgGrid(df, gridOptions=go)
             hor,ver=self.clues()
 
             col1, col2 = st.columns(2)
 
             with col1:
                 st.header("מאוזן")
-                for h in hor:
-                    st.write(h)
+                choose_h=st.empty()
+                txt=self.extract_def(hor,choose_h)
+                txt
+                res=df.loc[(df['defs']==txt[3:]) | (df['defs']==txt[4:])]
+                length=res['length'].values[0]
+                x=res['X'].values[0]
+                y=res['Y'].values[0]
+                y=19-y
+                # tashbets.iloc[[14],[13,14,15,16]]
+                tashbets.iloc[[x],[y]]
+                ans=st.text_input('פתרון אופקי',max_chars=length)
+                if ans:
+                    for a in ans:
+                        tashbets.iloc[[x],[y]]+=a
+                        y-=1
+                tashbets
 
             with col2:
                 st.header("מאונך")
-                for v in ver:
-                    st.write(v)
+                choose_v=st.empty()
+                txt=self.extract_def(ver,choose_v)
+                txt
+                res=df.loc[(df['defs']==txt[3:]) | (df['defs']==txt[4:])]
+                length=res['length'].values[0]
+                x=res['X'].values[0]
+                y=res['Y'].values[0]
+                y=19-y
+                # tashbets.iloc[[14],[13,14,15,16]]
+                tashbets.iloc[[x],[y]]
+                ans=st.text_input('פתרון אנכי',max_chars=length)
+                if ans:
+                    for a in ans:
+                        tashbets.iloc[[x],[y]]+=a
+                        x+=1
+                tashbets
 
 
         # grid_return = AgGrid(df, editable=True)
