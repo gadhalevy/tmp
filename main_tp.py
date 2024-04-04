@@ -107,13 +107,14 @@ def build_df(url):
                     tmp[row_count,col_count]=num
                 # elif not col.text.isdigit():
                 #     tmp[row_count,col_count]='o'
-            else:
-                tmp[row_count,col_count]='x'
+            # else:
+            #     tmp[row_count,col_count]='x'
             col_count+=1
         row_count+=1
     fliped=np.fliplr(tmp)
-    lst=[str(i) for i in range(20)]
-    df=pd.DataFrame(fliped,columns=lst,index=lst)
+    lst=[str(i) for i in range(col_count)]
+    idx=[str(i) for i in range(row_count)]
+    df=pd.DataFrame(fliped,columns=lst,index=idx)
     return df
 
 def make_options(lst):
@@ -133,7 +134,7 @@ data_ver=''
 df=pd.DataFrame(np.empty((100,100)))
 hor=''
 ver=''
-tashbets=pd.DataFrame(np.empty((20,20),dtype='<U2'))
+tashbets=pd.DataFrame(np.empty((20,20),dtype='<U3'))
 ans_hor=''
 ans_ver=''
 id_hor=''
@@ -158,7 +159,6 @@ def prepare(state):
     return res,length,x,y,newdf
 
 def on_ans_hor(state,id,dic):
-    print('id=',id,dic)
     res = state.df.loc[(state.df['defs'] == state.data_hor[0][3:]) | (state.df['defs'] == state.data_hor[0][4:])]
     length=res['length'].values[0]
     x=res['X'].values[0]
@@ -167,10 +167,15 @@ def on_ans_hor(state,id,dic):
     newdf=state.tashbets.copy()
     if len(state.ans_hor.strip())==length:
         for a in state.ans_hor:
-            # print(a,x,y)
-            newdf.iloc[[x],[y]]+=a
+            if len(newdf.iloc[x,y])==1:
+                if newdf.iloc[x,y].isdigit():
+                    newdf.iloc[x,y]+=' '+a
+                    newdf.iloc[x,y]=newdf.iloc[x,y][::-1]
+            elif len(newdf.iloc[x,y])==0:
+                newdf.iloc[[x],[y]]=a
             y-=1
         state.tashbets=newdf
+        ans_hor=''
     else:
         notify(state,'warning','תשובה באורך שגוי')
 
@@ -183,10 +188,15 @@ def on_ans_ver(state):
     newdf=state.tashbets.copy()
     if len(state.ans_ver.strip())==length:
         for a in state.ans_ver:
-            # print(a,x,y)
-            newdf.iloc[[x],[y]]+=a
+            if len(newdf.iloc[x,y])==1:
+                if newdf.iloc[x,y].isdigit():
+                    num=newdf.iloc[x,y]
+                    newdf.iloc[x,y]=num+a
+            elif len(newdf.iloc[x,y])==0:
+                newdf.iloc[[x],[y]]=a
             x+=1
         state.tashbets=newdf
+        ans_ver=''
     else:
         notify(state,'warning','תשובה באורך שגוי')
 
