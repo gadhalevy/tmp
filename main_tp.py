@@ -89,10 +89,19 @@ def clues(url):
     ver=txt[2].split('\n')[3:]
     return hor,ver
 
+def digit_font(state,index,vals):
+    for i in range(20):
+        if vals[i].isdigit():
+            return "small-digit"
+        else:
+            return "big-ascii"
+
+def header(_,ind,val):
+    if ind==0:
+        return "black-cell"
+
+
 def build_df(url):
-    # row=[None,]*20
-    # data={str(i):row for i in range(20)}
-    # df=pd.DataFrame(data=data)
     tmp=np.empty((20,20),dtype='<U2')
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html5lib') # If this line causes an error, run 'pip install html5lib' or install html5lib
@@ -111,11 +120,11 @@ def build_df(url):
             #     tmp[row_count,col_count]='x'
             col_count+=1
         row_count+=1
-    fliped=np.fliplr(tmp)
-    lst=[str(i) for i in range(col_count)]
-    idx=[str(i) for i in range(row_count)]
-    df=pd.DataFrame(fliped,columns=lst,index=idx)
-    return df
+    fliped=np.fliplr(tmp)[:row_count+1,:col_count+1]
+    # lst=[str(i) for i in range(col_count)]
+    # idx=[str(i) for i in range(row_count)]
+    df=pd.DataFrame(fliped)
+    return fliped,row_count,col_count
 
 def make_options(lst):
     nums=[h[:3] for h in lst if h[:3].strip().replace('.','').isdigit()]
@@ -134,15 +143,18 @@ data_ver=''
 df=pd.DataFrame(np.empty((100,100)))
 hor=''
 ver=''
-tashbets=pd.DataFrame(np.empty((20,20),dtype='<U3'))
+num_rows=20
+num_cols=20
+tashbets=np.empty((num_rows,num_cols),dtype='<U3')
 ans_hor=''
 ans_ver=''
 id_hor=''
 h_prop={'name':'hor'}
+
 # v_prop={'name':'ver'}
 
 def cross(state):
-    state.tashbets=build_df(state.url)
+    state.tashbets,state.num_rows,state.num_cols=build_df(state.url)
     state.df=make_df(state.url)
     state.hor,state.ver=clues(state.url)
 
@@ -158,7 +170,7 @@ def prepare(state):
     newdf=state.tashbets.copy()
     return res,length,x,y,newdf
 
-def on_ans_hor(state,id,dic):
+def on_ans_hor(state,**kwargs):
     res = state.df.loc[(state.df['defs'] == state.data_hor[0][3:]) | (state.df['defs'] == state.data_hor[0][4:])]
     length=res['length'].values[0]
     x=res['X'].values[0]
@@ -167,15 +179,15 @@ def on_ans_hor(state,id,dic):
     newdf=state.tashbets.copy()
     if len(state.ans_hor.strip())==length:
         for a in state.ans_hor:
-            if len(newdf.iloc[x,y])==1:
-                if newdf.iloc[x,y].isdigit():
-                    newdf.iloc[x,y]+=' '+a
-                    newdf.iloc[x,y]=newdf.iloc[x,y][::-1]
-            elif len(newdf.iloc[x,y])==0:
-                newdf.iloc[[x],[y]]=a
+            if len(newdf[x,y])==1:
+                if newdf[x,y].isdigit():
+                    newdf[x,y]+=' '+a
+                    newdf[x,y]=newdf[x,y][::-1]
+            elif len(newdf[x,y])==0:
+                newdf[[x],[y]]=a
             y-=1
         state.tashbets=newdf
-        ans_hor=''
+        state.ans_hor=''
     else:
         notify(state,'warning','תשובה באורך שגוי')
 
@@ -188,15 +200,15 @@ def on_ans_ver(state):
     newdf=state.tashbets.copy()
     if len(state.ans_ver.strip())==length:
         for a in state.ans_ver:
-            if len(newdf.iloc[x,y])==1:
-                if newdf.iloc[x,y].isdigit():
-                    num=newdf.iloc[x,y]
-                    newdf.iloc[x,y]=num+a
-            elif len(newdf.iloc[x,y])==0:
-                newdf.iloc[[x],[y]]=a
+            if len(newdf[x,y])==1:
+                if newdf[x,y].isdigit():
+                    num=newdf[x,y]
+                    newdf[x,y]=num+a
+            elif len(newdf[x,y])==0:
+                newdf[x,y]=a
             x+=1
         state.tashbets=newdf
-        ans_ver=''
+        state.ans_ver=''
     else:
         notify(state,'warning','תשובה באורך שגוי')
 
@@ -209,7 +221,14 @@ def on_input_hor(state,var,val):
 def on_input_ver(state,var,value):
     state.ans_ver=value
 
-h_prop={"name":"h"}
+
+# stylekit = {
+#     "color_primary": "#00FF00",
+#     "color_secondary": "#C0EFFE",
+#     "body-text": "text-right !important"
+# }
+
+
 
 page="""
 <|toggle|theme|>
@@ -223,7 +242,7 @@ page="""
 <|{url}|input|>
 <|צור תשבץ|button|on_action=cross|>
 
-<|{tashbets}|table|editable={True}|class_name=rows-bordered|>
+<|{tashbets}|table|>
 
 <|layout|columns=1 1|
 <|
