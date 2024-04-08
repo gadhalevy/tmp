@@ -1,18 +1,15 @@
-.big-ascii{
+:root{
   font-size: 2rem;
 }
-table, td {
+table,  td {
   border: 1px solid;
   text-align: right;
+  border-collapse: collapse;
+}
+thead {
+    display: none;
 }
 .small-digit{
     font-size: 0.5rem;
 }
-.black-cell>td {
-    color: black;
-    background-color: black;
-}
-table, th{
-    color: black;
-    background-color: black;
-}
+

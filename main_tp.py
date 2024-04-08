@@ -1,10 +1,8 @@
 #This will not run on online IDE
-import requests
+import requests,string
 from bs4 import BeautifulSoup
 import pandas as pd,numpy as np
 from taipy.gui import Gui,notify
-
-
 
 def set_places(url=None):
     url = url+'/print'
@@ -102,7 +100,7 @@ def header(_,ind,val):
 
 
 def build_df(url):
-    tmp=np.empty((20,20),dtype='<U2')
+    tmp=np.empty((20,20),dtype='<U3')
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html5lib') # If this line causes an error, run 'pip install html5lib' or install html5lib
     table=soup.find('table',attrs={'id':'pzl1'})
@@ -113,16 +111,10 @@ def build_df(url):
             if col.text:
                 num=''.join(c for c in col.text if c.isdigit())
                 if num:
-                    tmp[row_count,col_count]=num
-                # elif not col.text.isdigit():
-                #     tmp[row_count,col_count]='o'
-            # else:
-            #     tmp[row_count,col_count]='x'
+                    tmp[row_count,col_count]=string.ascii_lowercase[int(num)-1]
             col_count+=1
         row_count+=1
     fliped=np.fliplr(tmp)[:row_count+1,:col_count+1]
-    # lst=[str(i) for i in range(col_count)]
-    # idx=[str(i) for i in range(row_count)]
     df=pd.DataFrame(fliped)
     return fliped,row_count,col_count
 
@@ -135,6 +127,7 @@ def make_options(lst):
     #     txt=[h for h in lst if h.strip().startswith(choose)]
     #     return txt[0]
     # return 'בחר הגדרה'
+current=''
 value_hor=0
 value_ver=0
 url=''
@@ -150,7 +143,7 @@ ans_hor=''
 ans_ver=''
 id_hor=''
 h_prop={'name':'hor'}
-
+lov=';'.join(string.ascii_lowercase)
 # v_prop={'name':'ver'}
 
 def cross(state):
@@ -159,61 +152,61 @@ def cross(state):
     state.hor,state.ver=clues(state.url)
 
 def on_slider_hor(state):
-    state.data_hor=[h for h in state.hor if h.strip().startswith(str(state.value_hor)+'.')]
+    state.current='hor'
+    on_slider(state)
+    # state.data_hor=[h for h in state.hor if h.strip().startswith(str(state.value_hor)+'.')]
+    # state.current='hor'
 
-def prepare(state):
-    res = state.df.loc[(state.df['defs'] == state.data_hor[0][3:]) | (state.df['defs'] == state.data_hor[0][4:])]
+def on_ans(state):
+    if state.current=='hor':
+        data=state.data_hor
+        ans=state.ans_hor
+    elif state.current=='ver':
+        data=state.data_ver
+        ans=state.ans_ver
+    res = state.df.loc[(state.df['defs'] == data[2:]) | (state.df['defs'] == data[3:])]
     length=res['length'].values[0]
     x=res['X'].values[0]
     y=res['Y'].values[0]
     y=19-y
     newdf=state.tashbets.copy()
-    return res,length,x,y,newdf
-
-def on_ans_hor(state,**kwargs):
-    res = state.df.loc[(state.df['defs'] == state.data_hor[0][3:]) | (state.df['defs'] == state.data_hor[0][4:])]
-    length=res['length'].values[0]
-    x=res['X'].values[0]
-    y=res['Y'].values[0]
-    y=19-y
-    newdf=state.tashbets.copy()
-    if len(state.ans_hor.strip())==length:
-        for a in state.ans_hor:
+    if len(ans.strip())==length:
+        for a in ans:
             if len(newdf[x,y])==1:
-                if newdf[x,y].isdigit():
-                    newdf[x,y]+=' '+a
-                    newdf[x,y]=newdf[x,y][::-1]
-            elif len(newdf[x,y])==0:
-                newdf[[x],[y]]=a
-            y-=1
-        state.tashbets=newdf
-        state.ans_hor=''
-    else:
-        notify(state,'warning','תשובה באורך שגוי')
-
-def on_ans_ver(state):
-    res = state.df.loc[(state.df['defs'] == state.data_ver[0][3:]) | (state.df['defs'] == state.data_ver[0][4:])]
-    length=res['length'].values[0]
-    x=res['X'].values[0]
-    y=res['Y'].values[0]
-    y=19-y
-    newdf=state.tashbets.copy()
-    if len(state.ans_ver.strip())==length:
-        for a in state.ans_ver:
-            if len(newdf[x,y])==1:
-                if newdf[x,y].isdigit():
+                if newdf[x,y] in string.ascii_lowercase:
                     num=newdf[x,y]
-                    newdf[x,y]=num+a
+                    newdf[x,y]=a+' '+num
             elif len(newdf[x,y])==0:
                 newdf[x,y]=a
-            x+=1
+            if state.current=='hor':
+                y-=1
+            elif state.current=='ver':
+                x+=1
         state.tashbets=newdf
-        state.ans_ver=''
+        state.ans_hor=state.ans_ver=''
     else:
         notify(state,'warning','תשובה באורך שגוי')
 
+def on_slider(state):
+    if state.current=='hor':
+        value=state.value_hor
+        clue=state.hor
+    elif state.current=='ver':
+        value=state.value_ver
+        clue=state.ver
+    tmp=[h for h in clue if h.strip().startswith(str(value)+'.')]
+    tmp=tmp[0].replace(str(value)+'.',string.ascii_lowercase[value-1])
+    if state.current=='hor':
+        state.data_hor=tmp
+    elif state.current=='ver':
+        state.data_ver=tmp
+
 def on_slider_ver(state):
-    state.data_ver=[h for h in state.ver if h.strip().startswith(str(state.value_ver)+'.')]
+    state.current='ver'
+    on_slider(state)
+    # state.data_ver=[h for h in state.ver if h.strip().startswith(str(state.value_ver)+'.')]
+    # state.data_ver=state.data_ver[0].replace(str(state.value_ver)+'.',string.ascii_lowercase[state.value_ver-1])
+    # state.current='ver'
 
 def on_input_hor(state,var,val):
     state.ans_hor=val
@@ -252,7 +245,7 @@ page="""
 <|{data_hor}|text|>
 
 <|{ans_hor}|input|on_change=on_input_hor|>
-<|השב|button|properties={h_prop}|on_action=on_ans_hor|>
+<|השב|button|properties={h_prop}|on_action=on_ans|>
 |>
 
 <|
@@ -262,7 +255,7 @@ page="""
 <|{data_ver}|text|>
 
 <|{ans_ver}|input|on_change=on_input_ver|>
-<|השב|button|on_action=on_ans_ver|>
+<|השב|button|on_action=on_ans|>
 |>
 |>
 """
