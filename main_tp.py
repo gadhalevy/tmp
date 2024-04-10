@@ -242,7 +242,7 @@ page="""
 ## מאוזן
 <|{value_hor}|slider|on_change=on_slider_hor|min=0|max=20|>
 
-<|{data_hor}|text|>
+<|{data_hor}|text|{: .big-letter }|>
 
 <|{ans_hor}|input|on_change=on_input_hor|>
 <|השב|button|properties={h_prop}|on_action=on_ans|>
@@ -260,90 +260,3 @@ page="""
 |>
 """
 Gui(page).run(debug=True)
-    # st.write('הקש על הקישור וצור תשבץ')
-        # st.write('https://geek.co.il/~mooffie/crossword')
-        # url=st.text_input('כתוב את כתובת התשבץ')
-        # if url:
-        #     tashbets=build_df(url)
-        #     tashbets
-        #     df=make_df(url)
-        #     df
-        #
-        #     # builder = GridOptionsBuilder.from_dataframe(df)
-        #     # builder.configure_columns(column_names=[str(i) for i in range(20)],  width=35,editable=True)
-        #     # go = builder.build()
-        #     # # uses the gridOptions dictionary to configure AgGrid behavior.
-        #     # AgGrid(df, gridOptions=go)
-        #     hor,ver=clues()
-        #
-        #     col1, col2 = st.columns(2)
-        #
-        #     with col1:
-        #         st.header("מאוזן")
-        #         choose_h=st.empty()
-        #         txt=extract_def(hor,choose_h)
-        #         txt
-        #         res=df.loc[(df['defs']==txt[3:]) | (df['defs']==txt[4:])]
-        #         length=res['length'].values[0]
-        #         x=res['X'].values[0]
-        #         y=res['Y'].values[0]
-        #         y=19-y
-        #         # tashbets.iloc[[14],[13,14,15,16]]
-        #         tashbets.iloc[[x],[y]]
-        #         ans=st.text_input('פתרון אופקי',max_chars=length)
-        #         if ans:
-        #             for a in ans:
-        #                 tashbets.iloc[[x],[y]]+=a
-        #                 y-=1
-        #         tashbets
-        #
-        #     with col2:
-        #         st.header("מאונך")
-        #         choose_v=st.empty()
-        #         txt=extract_def(ver,choose_v)
-        #         txt
-        #         res=df.loc[(df['defs']==txt[3:]) | (df['defs']==txt[4:])]
-        #         length=res['length'].values[0]
-        #         x=res['X'].values[0]
-        #         y=res['Y'].values[0]
-        #         y=19-y
-        #         # tashbets.iloc[[14],[13,14,15,16]]
-        #         tashbets.iloc[[x],[y]]
-        #         ans=st.text_input('פתרון אנכי',max_chars=length)
-        #         if ans:
-        #             for a in ans:
-        #                 tashbets.iloc[[x],[y]]+=a
-        #                 x+=1
-        #         tashbets
-        #
-
-        # grid_return = AgGrid(df, editable=True)
-        # new_df = grid_return['data']
-        # new_df
-
-
-
-
-
-
-
-
-
-
-# if __name__=='__main__':
-#     cross=Cross()
-#     cross.main()
-    # cross.build_df('https://geek.co.il/~mooffie/crossword/7433')
-    # cross.set_places()
-    # cross.find_len()
-    # cross.main()
-    # cross.set_places()
-    # st.write(cross.set_places())
-    # cross.find_len()
-    # cross.find_len(orientation='V',attrVal='<div class="direction-title">מאונך</div>')
-    # cross.make_cross()
-    # print(cross.set_places())
-    # set_places()
-    # make_cross()
-
-

@@ -1,15 +1,16 @@
 :root{
-  font-size: 2rem;
+    thead {
+        display: none;
+    }
+    table,  td {
+          border: 1px solid;
+          text-align: right;
+          border-collapse: collapse;
+          font-size: 2rem;
 }
-table,  td {
-  border: 1px solid;
-  text-align: right;
-  border-collapse: collapse;
+.big-letter {
+    font-size: 2rem;
 }
-thead {
-    display: none;
 }
-.small-digit{
-    font-size: 0.5rem;
-}
+
 
