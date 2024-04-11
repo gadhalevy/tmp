@@ -94,11 +94,6 @@ def digit_font(state,index,vals):
         else:
             return "big-ascii"
 
-def header(_,ind,val):
-    if ind==0:
-        return "black-cell"
-
-
 def build_df(url):
     tmp=np.empty((20,20),dtype='<U3')
     r = requests.get(url)
@@ -116,17 +111,13 @@ def build_df(url):
         row_count+=1
     fliped=np.fliplr(tmp)[:row_count+1,:col_count+1]
     df=pd.DataFrame(fliped)
-    return fliped,row_count,col_count
+    return fliped
 
-def make_options(lst):
-    nums=[h[:3] for h in lst if h[:3].strip().replace('.','').isdigit()]
-    nums.insert(0,'0')
-    return nums
-    # choose=st.select_slider('בחר הגדרה',options=nums,value='0')
-    # if choose!='0':
-    #     txt=[h for h in lst if h.strip().startswith(choose)]
-    #     return txt[0]
-    # return 'בחר הגדרה'
+def make_clues_idxs(lst):
+    nums=[h[:3].strip().replace('.','') for h in lst if h[:3].strip().replace('.','').isdigit()]
+    abc=[string.ascii_lowercase[int(n)-1] for n in nums]
+    return abc
+
 current=''
 value_hor=0
 value_ver=0
@@ -136,26 +127,19 @@ data_ver=''
 df=pd.DataFrame(np.empty((100,100)))
 hor=''
 ver=''
-num_rows=20
-num_cols=20
-tashbets=np.empty((num_rows,num_cols),dtype='<U3')
+tashbets=np.empty((20,20),dtype='<U3')
 ans_hor=''
 ans_ver=''
-id_hor=''
-h_prop={'name':'hor'}
-lov=';'.join(string.ascii_lowercase)
-# v_prop={'name':'ver'}
+idx_hor=''
+idx_ver=''
 
 def cross(state):
-    state.tashbets,state.num_rows,state.num_cols=build_df(state.url)
+    state.tashbets=build_df(state.url)
     state.df=make_df(state.url)
     state.hor,state.ver=clues(state.url)
-
-def on_slider_hor(state):
-    state.current='hor'
-    on_slider(state)
-    # state.data_hor=[h for h in state.hor if h.strip().startswith(str(state.value_hor)+'.')]
-    # state.current='hor'
+    state.idx_hor=make_clues_idxs(state.hor)
+    state.idx_ver=make_clues_idxs(state.ver)
+    breakpoint()
 
 def on_ans(state):
     if state.current=='hor':
@@ -200,28 +184,19 @@ def on_slider(state):
         state.data_hor=tmp
     elif state.current=='ver':
         state.data_ver=tmp
+def on_slider_hor(state):
+    state.current='hor'
+    on_slider(state)
 
 def on_slider_ver(state):
     state.current='ver'
     on_slider(state)
-    # state.data_ver=[h for h in state.ver if h.strip().startswith(str(state.value_ver)+'.')]
-    # state.data_ver=state.data_ver[0].replace(str(state.value_ver)+'.',string.ascii_lowercase[state.value_ver-1])
-    # state.current='ver'
 
 def on_input_hor(state,var,val):
     state.ans_hor=val
 
 def on_input_ver(state,var,value):
     state.ans_ver=value
-
-
-# stylekit = {
-#     "color_primary": "#00FF00",
-#     "color_secondary": "#C0EFFE",
-#     "body-text": "text-right !important"
-# }
-
-
 
 page="""
 <|toggle|theme|>
@@ -240,16 +215,20 @@ page="""
 <|layout|columns=1 1|
 <|
 ## מאוזן
+<|{idx_hor}|text|>{: .big-letter }
+
 <|{value_hor}|slider|on_change=on_slider_hor|min=0|max=20|>
 
-<|{data_hor}|text|{: .big-letter }|>
+<|{data_hor}|text|>
 
 <|{ans_hor}|input|on_change=on_input_hor|>
-<|השב|button|properties={h_prop}|on_action=on_ans|>
+<|השב|button|on_action=on_ans|>
 |>
 
 <|
 ## מאונך
+<|{idx_ver}|text|>
+
 <|{value_ver}|slider|on_change=on_slider_ver|min=0|max=20|>
 
 <|{data_ver}|text|>

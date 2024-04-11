@@ -5,11 +5,12 @@
     table,  td {
           border: 1px solid;
           text-align: right;
-          border-collapse: collapse;
           font-size: 2rem;
-}
-.big-letter {
+    body {
+    .big-letter {
     font-size: 2rem;
+    }
+}
 }
 }
 
