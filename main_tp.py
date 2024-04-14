@@ -139,7 +139,7 @@ def cross(state):
     state.hor,state.ver=clues(state.url)
     state.idx_hor=make_clues_idxs(state.hor)
     state.idx_ver=make_clues_idxs(state.ver)
-    breakpoint()
+
 
 def on_ans(state):
     if state.current=='hor':
@@ -219,7 +219,7 @@ page="""
 
 <|{value_hor}|slider|on_change=on_slider_hor|min=0|max=20|>
 
-<|{data_hor}|text|>
+<|{data_hor}|text|>{: .big-letter }
 
 <|{ans_hor}|input|on_change=on_input_hor|>
 <|השב|button|on_action=on_ans|>
@@ -227,11 +227,11 @@ page="""
 
 <|
 ## מאונך
-<|{idx_ver}|text|>
+<|{idx_ver}|text|>{: .big-letter }
 
 <|{value_ver}|slider|on_change=on_slider_ver|min=0|max=20|>
 
-<|{data_ver}|text|>
+<|{data_ver}|text|>{: .big-letter }
 
 <|{ans_ver}|input|on_change=on_input_ver|>
 <|השב|button|on_action=on_ans|>
