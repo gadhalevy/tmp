@@ -107,6 +107,8 @@ def build_df(url):
                 num=''.join(c for c in col.text if c.isdigit())
                 if num:
                     tmp[row_count,col_count]=string.ascii_lowercase[int(num)-1]
+            else:
+              tmp[row_count,col_count]='X'
             col_count+=1
         row_count+=1
     fliped=np.fliplr(tmp)[:row_count+1,:col_count+1]
@@ -172,6 +174,7 @@ def on_ans(state):
         notify(state,'warning','תשובה באורך שגוי')
 
 def on_slider(state):
+    state.data_hor=state.data_ver=''
     if state.current=='hor':
         value=state.value_hor
         clue=state.hor
