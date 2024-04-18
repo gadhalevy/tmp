@@ -113,7 +113,7 @@ def build_df(url):
         row_count+=1
     fliped=np.fliplr(tmp)[:row_count+1,:col_count+1]
     df=pd.DataFrame(fliped)
-    return fliped
+    return df
 
 def make_clues_idxs(lst):
     nums=[h[:3].strip().replace('.','') for h in lst if h[:3].strip().replace('.','').isdigit()]
@@ -134,9 +134,15 @@ ans_hor=''
 ans_ver=''
 idx_hor=''
 idx_ver=''
-
+def highlight_max_cell(s):
+    return ['background-color: red' if ss=='X' else '' for ss in s  ]
+def style_cel(state,val,idx,row,col):
+    print(val)
+    if val=='X':
+        return "red-cell"
 def cross(state):
     state.tashbets=build_df(state.url)
+    state.tashbets=state.tashbets.style.apply(highlight_max_cell)
     state.df=make_df(state.url)
     state.hor,state.ver=clues(state.url)
     state.idx_hor=make_clues_idxs(state.hor)
