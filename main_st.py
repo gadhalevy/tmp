@@ -236,8 +236,8 @@ def on_ans(ans,length,x,y,curr):
         for a in ans:
             if 2>=len(st.session_state.cross.iloc[x,y])>0:
                 num=st.session_state.cross.iloc[x,y]
-                if num.isdigit():
-                    st.session_state.cross.iloc[x,y]=a+num
+                if num.isnumeric():
+                    st.session_state.cross.iloc[x,y]=num+' '+a
             elif len(st.session_state.cross.iloc[x,y])==0:
                 st.session_state.cross.iloc[x,y]=a
             # st.session_state.cross.iloc[[x], [y]] +=' '+ a
