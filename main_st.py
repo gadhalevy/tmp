@@ -3,100 +3,6 @@ import requests,string
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
-from docutils.nodes import header
-import streamlit.components.v1 as components
-from sympy.unify.core import index
-
-
-#
-# def set_places(url=None):
-#     url = url+'/print'
-#     r = requests.get(url)
-#     soup = BeautifulSoup(r.content, 'html5lib') # If this line causes an error, run 'pip install html5lib' or install html5lib
-#     table=soup.find('div',attrs={'id':'crossword_wrapper'})
-#     row_count=0
-#     dic={}
-#     for row in table.find_all('tr'):
-#         col_count=0
-#         for col in row.findAllNext('td'):
-#             if col.text.isdigit():
-#                 dic[col.text]=row_count,col_count
-#             col_count+=1
-#         row_count+=1
-#     df=pd.DataFrame.from_dict(dic,orient='index',columns=['X','Y'])
-#     return df
-#
-# def find_len(url):
-#     # url=url.replace('/print','')
-#     r = requests.get(url)
-#     tmp = BeautifulSoup(r.content, 'html5lib')
-#     # st.write(tmp.prettify())
-#     defs=tmp.find('textarea',attrs={'id':'raw-words'}).get_text()
-#     splited=defs.split('\n')
-#     ques=[];ans=[]
-#     for s in splited:
-#         try:
-#             a,q=s.split('-')
-#         except ValueError:
-#             continue
-#         ques.append(q)
-#         ans.append(a)
-#     df=pd.DataFrame({'defs':ques,'answers':ans,'length':[len(a.replace(' ','').strip()) for a in ans]})
-#     return df
-#
-#
-# def pd_idx_txt(orientation,lst):
-#     txts=[]
-#     idxs=[]
-#     for l in lst:
-#         idx=l[:3].strip().replace('.','')
-#         txt=l[3:]
-#         if idx.isdigit():
-#             idxs.append(idx)
-#         if len(txt)>2:
-#             txts.append(txt)
-#     tmp=pd.DataFrame({'index':idxs,'defs':txts,'orientation':[orientation]*len(idxs)})
-#     return tmp
-#
-#
-# def make_df(url):
-#     places=set_places(url)
-#     table=soup.find('table',attrs={'class':'print-nobreak'})
-#     tds=table.findAll('td')
-#     txt=[]
-#     for t in tds:
-#         txt.append(t.get_text())
-#     hor=txt[0].split('\n')
-#     ver=txt[2].split('\n')
-#     df_hor=pd_idx_txt('H',hor)
-#     df_ver=pd_idx_txt('V',ver)
-#     res=pd.concat([df_hor,df_ver])
-#     df=res.merge(places,left_on='index',right_index=True)
-#     df.defs=df.defs.str.strip()
-#     txts=find_len(url)
-#     txts.defs=txts.defs.str.strip()
-#     final=txts.merge(df)
-#     return final
-#
-# def build_df(url):
-#     tmp = np.empty((20, 20), dtype='<U3')
-#     r = requests.get(url)
-#     soup = BeautifulSoup(r.content,
-#                          'html5lib')  # If this line causes an error, run 'pip install html5lib' or install html5lib
-#     table = soup.find('table', attrs={'id': 'pzl1'})
-#     row_count = 0
-#     for row in table.find_all('tr'):
-#         col_count = 0
-#         for col in row.findAll('td'):
-#             if col.text:
-#                 num = ''.join(c for c in col.text if c.isdigit())
-#                 if num:
-#                     tmp[row_count, col_count] = string.ascii_lowercase[int(num) - 1]
-#             col_count += 1
-#         row_count += 1
-#     fliped = np.fliplr(tmp)[:row_count + 1, :col_count + 1]
-#     df = pd.DataFrame(fliped)
-#     return fliped, row_count, col_count
 
 @st.cache_data
 def set_places(url=None):
@@ -269,7 +175,7 @@ def main():
         # dic={i: ss for i,ss in enumerate(s)}
         # st.dataframe(styled,height=35*len(tashbets),hide_index=True)
         place_holder=st.empty()
-        col1, col2 = st.columns(2)
+        col1, col2= st.columns(2)
         with col1:
             st.header("מאוזן")
             nums=slider_nums(hor)
@@ -278,7 +184,9 @@ def main():
                 txt=slider_txt(hor,choose_h)
                 st.write(txt)
                 length,x,y=get_params(df,txt)
-                ans=st.text_input('פתרון אופקי')
+                col3,col4=st.columns([3,1])
+                with col3:
+                    ans=st.text_input('פתרון אופקי')
                 pitaron=st.button('השב אופקי')
                 if pitaron:
                     on_ans(ans,length,x,y,'hor')
