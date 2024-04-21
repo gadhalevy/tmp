@@ -252,19 +252,9 @@ def on_ans(ans,length,x,y,curr):
 def slider_txt(lst,slide_val):
     txt=[h for h in lst if h.strip().startswith(str(slide_val))]
     return txt[0]
-# @st.cache_data
-# def extract_def(lst):# @st.cache_data
-# def extract_def(lst):
-#     nums=[h[:3] for h in lst if h[:3].strip().replace('.','').isdigit()]
-#     nums.insert(0,'0')
-#     nums=[h[:3] for h in lst if h[:3].strip().replace('.','').isdigit()]
-#     nums.insert(0,'0')
-#     choose=st.select_slider('בחר הגדרה',options=nums,value='0')
-#     if choose!='0':
-#         txt=[h for h in lst if h.strip().startswith(str(choose))]
-#         return txt[0]
-#     return 'בחר הגדרה'
+
 def main():
+    st.set_page_config(layout="wide")
     st.write('הקש על הקישור וצור תשבץ')
     st.write('https://geek.co.il/~mooffie/crossword')
     url = st.text_input('כתוב את כתובת התשבץ')
@@ -306,121 +296,5 @@ def main():
                     on_ans(ans,length,x,y,'ver')
         place_holder.dataframe(styled, height=35 * len(tashbets), hide_index=True)
 
-
-
-        #     txt = extract_def(hor)
-        #     st.write(txt)
-        #     res = df.loc[(df['defs'] == txt[3:]) | (df['defs'] == txt[4:])]
-        #     try:
-        #         length = res['length'].values[0]
-        #         x = res['X'].values[0]
-        #         y = res['Y'].values[0]
-        #     except IndexError:
-        #         pass
-        #     y = 19 - y
-        #     # tashbets.iloc[[14],[13,14,15,16]]
-        #     # tashbets.iloc[[x], [y]]
-        #     ans = st.text_input('פתרון אופקי', max_chars=length)
-        #     st.write(len(ans) ==length)
-        #     if len(ans) ==length:
-        #         for a in ans:
-        #             tashbets.iloc[[x], [y]] += a
-        #             y -= 1
-        #     # components.html(tashbets.to_html(header=False,index=False),height=len(tashbets)*26)
-        #
-        # with col2:
-        #     st.header("מאונך")
-        #     choose_v = st.empty()
-        #     txt = extract_def(ver, choose_v)
-        #     st.write(txt)
-        #     res = df.loc[(df['defs'] == txt[3:]) | (df['defs'] == txt[4:])]
-        #     try:
-        #         length = res['length'].values[0]
-        #         x = res['X'].values[0]
-        #         y = res['Y'].values[0]
-        #     except IndexError:
-        #         pass
-        #     y = 19 - y
-        #     # tashbets.iloc[[14],[13,14,15,16]]
-        #     # tashbets.iloc[[x], [y]]
-        #     ans = st.text_input('פתרון אנכי', max_chars=length)
-        #     if ans:
-        #         for a in ans:
-        #             tashbets.iloc[[x], [y]] += a
-        #             x += 1
-        # components.html(tashbets.to_html(header=False,index=False),height=len(tashbets)*26,width=500)
-
-
-    # builds a gridOptions dictionary using a GridOptionsBuilder instance.
-    # builder = GridOptionsBuilder.from_dataframe(df)
-    # builder.configure_columns(column_names=[str(i) for i in range(20)],  width=35,editable=True)
-    # go = builder.build()
-    # # uses the gridOptions dictionary to configure AgGrid behavior.
-    # AgGrid(df, gridOptions=go)
-    # # grid_return = AgGrid(df, editable=True)
-    # # new_df = grid_return['data']
-    # # new_df
-
-
-
-
-
-
-
-
-
-
 if __name__=='__main__':
     main()
-# cross.set_places()
-# st.write(cross.set_places())
-# cross.find_len()
-# cross.find_len(orientation='V',attrVal='<div class="direction-title">מאונך</div>')
-# cross.make_cross()
-# print(cross.set_places())
-# set_places()
-# make_cross()
-
-# import streamlit as st
-# import pandas as pd
-#
-# # Sample DataFrame
-# df = pd.DataFrame({
-#     'A': [1, 2, 3, 4],
-#     'B': [10, 20, 30, 40],
-#     'C': [100, 200, 300, 400]
-# })
-#
-# # Function to apply custom styling to the maximum cell
-# def highlight_max_cell(s):
-#     # st.write(s)
-#     is_max = s == s.max()
-#     # st.write(is_max)
-#     # st.write(['background-color: yellow' if v else '' for v in is_max])
-#     return ['background-color: yellow' if ss==400 else '' for ss in s  ]
-#
-# # Apply custom styling to the maximum cell
-# styled_df = df.style.hide().apply(highlight_max_cell)
-# # Display styled DataFrame
-# st.write(styled_df)
-# import pandas as pd,numpy as np,streamlit as st
-# weather_df = pd.DataFrame(np.random.rand(10,2)*5,
-#                           index=pd.date_range(start="2021-01-01", periods=10),
-#                           columns=["Tokyo", "Beijing"])
-#
-# def rain_condition(v):
-#     if v < 1.75:
-#         return "Dry"
-#     elif v < 2.75:
-#         return "Rain"
-#     return "Heavy Rain"
-#
-# def make_pretty(styler):
-#     styler.set_caption("Weather Conditions")
-#     styler.format(rain_condition)
-#     styler.format_index(lambda v: v.strftime("%A"))
-#     styler.background_gradient(axis=None, vmin=1, vmax=5, cmap="YlGnBu")
-#     return styler
-#
-# weather_df.iloc[0:4].style.pipe(make_pretty)
-# st.write(weather_df)
