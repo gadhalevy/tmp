@@ -184,9 +184,7 @@ def main():
                 txt=slider_txt(hor,choose_h)
                 st.write(txt)
                 length,x,y=get_params(df,txt)
-                col3,col4=st.columns([3,1])
-                with col3:
-                    ans=st.text_input('פתרון אופקי')
+                ans=st.text_input('פתרון אופקי')
                 pitaron=st.button('השב אופקי')
                 if pitaron:
                     on_ans(ans,length,x,y,'hor')
