@@ -202,7 +202,7 @@ def main():
                 pitaron=st.button('השב אנכי')
                 if pitaron:
                     on_ans(ans,length,x,y,'ver')
-        place_holder.dataframe(styled, height=35 * len(tashbets), hide_index=True)
+        place_holder.dataframe(styled, height=38 * len(tashbets), hide_index=True)
 
 if __name__=='__main__':
     main()
