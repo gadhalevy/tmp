@@ -117,14 +117,17 @@ def make_clues_idxs(lst):
     nums=[h[:3].strip().replace('.','') for h in lst if h[:3].strip().replace('.','').isdigit()]
     abc=[string.ascii_lowercase[int(n)-1] for n in nums]
     return abc
+
 @st.cache_data
 def hilight(s):
     return ['background-color: red' if ss==' ' else '' for ss in s  ]
+
 @st.cache_data
 def slider_nums(lst):
     nums=[h[:3] for h in lst if h[:3].strip().replace('.','').isdigit()]
     nums.insert(0,'0')
     return nums
+
 @st.cache_data
 def get_params(df,txt):
     res = df.loc[(df['defs'] == txt[3:]) | (df['defs'] == txt[4:])]
@@ -136,6 +139,7 @@ def get_params(df,txt):
         return length, x, y
     except IndexError:
         pass
+
 @st.cache_data
 def on_ans(ans,length,x,y,curr):
     if len(ans.strip())==length:
@@ -145,20 +149,52 @@ def on_ans(ans,length,x,y,curr):
                 if num.isnumeric():
                     st.session_state.cross.iloc[x,y]=num+' '+a
             elif len(st.session_state.cross.iloc[x,y])==0:
-                st.session_state.cross.iloc[x,y]=a
-            # st.session_state.cross.iloc[[x], [y]] +=' '+ a
+                st.session_state.cross.iloc[x,y]='  '+a
             if curr=='hor':
                 y -= 1
             elif curr=='ver':
                 x+=1
     else:
-       st.error('הגדרה באורך שגוי',icon="🚨")
+        st.error('הגדרה באורך שגוי',icon="🚨")
+
+@st.cache_data
+def on_fix(ans,length,x,y,curr):
+    if len(ans.strip())==length:
+        for a in ans:
+            if len(st.session_state.cross.iloc[x, y].strip()) >=3:
+                num,ot=st.session_state.cross.iloc[x, y].strip().split()
+                if num.isnumeric():
+                    st.session_state.cross.iloc[x,y]=num+' '+a
+            else:
+                st.session_state.cross.iloc[x,y]='  '+a
+            if curr=='hor':
+                y -= 1
+            elif curr=='ver':
+                x+=1
+    else:
+        st.error('הגדרה באורך שגוי',icon="🚨")
 
 
+
+@st.cache_data
 def slider_txt(lst,slide_val):
     txt=[h for h in lst if h.strip().startswith(str(slide_val))]
     return txt[0]
 
+def process(direction,slider,writer,df,user_input,btn,kivun,tikun):
+    nums = slider_nums(direction)
+    choose_h = slider.select_slider('בחר הגדרה ', options=nums, value='0')
+    if choose_h != '0':
+        txt = slider_txt(direction, choose_h)
+        writer.write(txt)
+        length, x, y = get_params(df, txt)
+        ans = user_input.text_input( 'פתרון ' ,)
+        pitaron = btn.button('השב ')
+        fix=tikun.button('תקן ')
+        if pitaron:
+            on_ans(ans, length, x, y, kivun)
+        if fix:
+            on_fix(ans, length, x, y, kivun)
 def main():
     st.set_page_config(layout="wide")
     st.write('הקש על הקישור וצור תשבץ')
@@ -171,36 +207,18 @@ def main():
         df = make_df(url)
         hor, ver = clues(url)
         styled = st.session_state.cross.style.hide().apply(hilight)
-        # s='הצגת תשבץ כיישום ברשת'[::-1]
-        # dic={i: ss for i,ss in enumerate(s)}
-        # st.dataframe(styled,height=35*len(tashbets),hide_index=True)
-        place_holder=st.empty()
-        col1, col2= st.columns(2)
-        with col1:
-            st.header("מאוזן")
-            nums=slider_nums(hor)
-            choose_h = st.select_slider('בחר הגדרה אופקית',options=nums,value='0')
-            if choose_h!='0':
-                txt=slider_txt(hor,choose_h)
-                st.write(txt)
-                length,x,y=get_params(df,txt)
-                ans=st.text_input('פתרון אופקי')
-                pitaron=st.button('השב אופקי')
-                if pitaron:
-                    on_ans(ans,length,x,y,'hor')
-        with col2:
-            st.header("מאונך")
-            nums=slider_nums(ver)
-            choose_v = st.select_slider('בחר הגדרה אנכית',options=nums,value='0')
-            if choose_v!='0':
-                txt=slider_txt(ver,choose_v)
-                st.write(txt)
-                length,x,y=get_params(df,txt)
-                ans=st.text_input('פתרון אנכי')
-                pitaron=st.button('השב אנכי')
-                if pitaron:
-                    on_ans(ans,length,x,y,'ver')
-        place_holder.dataframe(styled, height=38 * len(tashbets), hide_index=True)
+        kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
+        st.sidebar.header(kivun)
+        slider=st.sidebar.empty()
+        writer=st.sidebar.empty()
+        user_input=st.sidebar.empty()
+        btn=st.sidebar.empty()
+        tikun=st.sidebar.empty()
+        if kivun=='מאוזן':
+            process(hor,slider,writer,df,user_input,btn,'hor',tikun)
+        else:
+            process(ver,slider,writer,df,user_input,btn,'ver',tikun)
+        st.dataframe(styled,height=38 * len(tashbets), hide_index=True)
 
 if __name__=='__main__':
     main()
