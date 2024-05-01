@@ -144,44 +144,31 @@ def get_params(df,txt):
 def on_ans(ans,length,x,y,curr):
     if len(ans.strip())==length:
         for a in ans:
-            if 2>=len(st.session_state.cross.iloc[x,y])>0:
+            if len(st.session_state.cross.iloc[x,y])==0:
+                st.session_state.cross.iloc[x,y]='  '+a
+            elif len(st.session_state.cross.iloc[x,y])<=2:
                 num=st.session_state.cross.iloc[x,y]
                 if num.isnumeric():
                     st.session_state.cross.iloc[x,y]=num+' '+a
-            elif len(st.session_state.cross.iloc[x,y])==0:
-                st.session_state.cross.iloc[x,y]='  '+a
+            elif len(st.session_state.cross.iloc[x,y])>=3:
+                if len(st.session_state.cross.iloc[x,y].strip())>=3:
+                    num,ot=st.session_state.cross.iloc[x,y].strip().split()
+                    st.session_state.cross.iloc[x,y]=num+'  '+a
+                else:
+                    st.session_state.cross.iloc[x,y]='  '+a
             if curr=='hor':
                 y -= 1
             elif curr=='ver':
                 x+=1
     else:
         st.error('הגדרה באורך שגוי',icon="🚨")
-
-@st.cache_data
-def on_fix(ans,length,x,y,curr):
-    if len(ans.strip())==length:
-        for a in ans:
-            if len(st.session_state.cross.iloc[x, y].strip()) >=3:
-                num,ot=st.session_state.cross.iloc[x, y].strip().split()
-                if num.isnumeric():
-                    st.session_state.cross.iloc[x,y]=num+' '+a
-            else:
-                st.session_state.cross.iloc[x,y]='  '+a
-            if curr=='hor':
-                y -= 1
-            elif curr=='ver':
-                x+=1
-    else:
-        st.error('הגדרה באורך שגוי',icon="🚨")
-
-
 
 @st.cache_data
 def slider_txt(lst,slide_val):
     txt=[h for h in lst if h.strip().startswith(str(slide_val))]
     return txt[0]
 
-def process(direction,slider,writer,df,user_input,btn,kivun,tikun):
+def process(direction,slider,writer,df,user_input,btn,kivun):
     nums = slider_nums(direction)
     choose_h = slider.select_slider('בחר הגדרה ', options=nums, value='0')
     if choose_h != '0':
@@ -190,11 +177,9 @@ def process(direction,slider,writer,df,user_input,btn,kivun,tikun):
         length, x, y = get_params(df, txt)
         ans = user_input.text_input( 'פתרון ' ,)
         pitaron = btn.button('השב ')
-        fix=tikun.button('תקן ')
         if pitaron:
             on_ans(ans, length, x, y, kivun)
-        if fix:
-            on_fix(ans, length, x, y, kivun)
+
 def main():
     st.set_page_config(layout="wide")
     st.write('הקש על הקישור וצור תשבץ')
@@ -213,11 +198,10 @@ def main():
         writer=st.sidebar.empty()
         user_input=st.sidebar.empty()
         btn=st.sidebar.empty()
-        tikun=st.sidebar.empty()
         if kivun=='מאוזן':
-            process(hor,slider,writer,df,user_input,btn,'hor',tikun)
+            process(hor,slider,writer,df,user_input,btn,'hor')
         else:
-            process(ver,slider,writer,df,user_input,btn,'ver',tikun)
+            process(ver,slider,writer,df,user_input,btn,'ver')
         st.dataframe(styled,height=38 * len(tashbets), hide_index=True)
 
 if __name__=='__main__':
