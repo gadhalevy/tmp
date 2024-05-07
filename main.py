@@ -7,7 +7,7 @@ from selenium import webdriver
 import time
 @st.cache_data
 def get_url(file):
-    driver=webdriver.Firefox()
+    driver=webdriver.Chrome()
     driver.get('https://geek.co.il/~mooffie/crossword/')
     form=driver.find_element(by='id',value='crossword-form')
     area=form.find_element(by='id',value='raw-words')
