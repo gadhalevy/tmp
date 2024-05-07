@@ -4,9 +4,16 @@ import requests,string
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
-from selenium import webdriver
 import time
-from selenium.webdriver import FirefoxOptions
+from selenium.webdriver.firefox.service import Service
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.firefox import GeckoDriverManager
 
 @st.cache_data
 def set_places(url=None):
@@ -184,24 +191,21 @@ def process(direction,slider,writer,df,user_input,btn,kivun):
         if pitaron:
             on_ans(ans, length, x, y, kivun)
 
-# @st.cache_data(experimental_allow_widgets=True)
-# def init():
-#     kovets=st.file_uploader('העלה בבקשה את קובץ התשבץ')
-#     if kovets:
-#         with open(kovets) as f:
-#             txt=f.read()
-#         return txt
 @st.experimental_singleton
 def installff():
   os.system('sbase install geckodriver')
   os.system('ln -s /home/appuser/venv/lib/python3.7/site-packages/seleniumbase/drivers/geckodriver /home/appuser/venv/bin/geckodriver')
 
 def init():
-    installff()
-    opts = FirefoxOptions()
-    opts.add_argument("--headless")
-    browser = webdriver.Firefox(options=opts)
-    return  browser
+    firefoxOptions = Options()
+    firefoxOptions.add_argument("--headless")
+    service = Service(GeckoDriverManager().install())
+    driver = webdriver.Firefox(
+        options=firefoxOptions,
+        service=service,
+    )
+
+    return  driver
 
 @st.cache_data
 def get_url(file,driver):
