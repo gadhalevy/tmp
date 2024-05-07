@@ -14,6 +14,7 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.firefox import GeckoDriverManager
+from io import StringIO
 
 @st.cache_data
 def set_places(url=None):
@@ -202,12 +203,10 @@ def init():
 
     return  driver
 
-def get_url(file,driver):
+def get_url(words,driver):
     driver.get('https://geek.co.il/~mooffie/crossword/')
     form=driver.find_element(by='id',value='crossword-form')
     area=form.find_element(by='id',value='raw-words')
-    with open(file,'r') as f:
-        words=f.read()
     area.clear()
     area.send_keys(words)
     submit=form.find_element(by='name',value='action_same')
@@ -231,7 +230,7 @@ def main():
     # txt=init()
     tmp=st.file_uploader('העלה בבקשה את קובץ התשבץ')
     if tmp:
-        kovets=tmp.name
+        kovets=StringIO(tmp.getvalue().decode('utf-8'))
         if kovets:
             driver=init()
             if driver:
