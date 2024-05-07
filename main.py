@@ -191,11 +191,6 @@ def process(direction,slider,writer,df,user_input,btn,kivun):
         if pitaron:
             on_ans(ans, length, x, y, kivun)
 
-@st.experimental_singleton
-def installff():
-  os.system('sbase install geckodriver')
-  os.system('ln -s /home/appuser/venv/lib/python3.7/site-packages/seleniumbase/drivers/geckodriver /home/appuser/venv/bin/geckodriver')
-
 def init():
     firefoxOptions = Options()
     firefoxOptions.add_argument("--headless")
@@ -207,7 +202,6 @@ def init():
 
     return  driver
 
-@st.cache_data
 def get_url(file,driver):
     driver.get('https://geek.co.il/~mooffie/crossword/')
     form=driver.find_element(by='id',value='crossword-form')
