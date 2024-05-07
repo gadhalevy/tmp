@@ -1,30 +1,12 @@
 #This will not run on online IDE
+import os
 import requests,string
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
 from selenium import webdriver
 import time
-@st.cache_data
-def get_url(file):
-    driver=webdriver.Chrome()
-    driver.get('https://geek.co.il/~mooffie/crossword/')
-    form=driver.find_element(by='id',value='crossword-form')
-    area=form.find_element(by='id',value='raw-words')
-    with open(file,'r') as f:
-        words=f.read()
-    area.clear()
-    area.send_keys(words)
-    submit=form.find_element(by='name',value='action_same')
-    submit.click()
-    form=driver.find_element(by='id',value='crossword-form')
-    time.sleep(1)
-    link=form.find_element(by='id',value='save-create-temp-btn')
-    link.click()
-    url=driver.current_url
-    time.sleep(2)
-    driver.quit()
-    return url
+from selenium.webdriver import FirefoxOptions
 
 @st.cache_data
 def set_places(url=None):
@@ -209,7 +191,37 @@ def process(direction,slider,writer,df,user_input,btn,kivun):
 #         with open(kovets) as f:
 #             txt=f.read()
 #         return txt
+@st.experimental_singleton
+def installff():
+  os.system('sbase install geckodriver')
+  os.system('ln -s /home/appuser/venv/lib/python3.7/site-packages/seleniumbase/drivers/geckodriver /home/appuser/venv/bin/geckodriver')
 
+def init():
+    installff()
+    opts = FirefoxOptions()
+    opts.add_argument("--headless")
+    browser = webdriver.Firefox(options=opts)
+    return  browser
+
+@st.cache_data
+def get_url(file,driver):
+    driver.get('https://geek.co.il/~mooffie/crossword/')
+    form=driver.find_element(by='id',value='crossword-form')
+    area=form.find_element(by='id',value='raw-words')
+    with open(file,'r') as f:
+        words=f.read()
+    area.clear()
+    area.send_keys(words)
+    submit=form.find_element(by='name',value='action_same')
+    submit.click()
+    form=driver.find_element(by='id',value='crossword-form')
+    time.sleep(1)
+    link=form.find_element(by='id',value='save-create-temp-btn')
+    link.click()
+    url=driver.current_url
+    time.sleep(2)
+    driver.quit()
+    return url
 def main():
     st.set_page_config(layout="wide")
     # st.write('הקש על הקישור וצור תשבץ')
@@ -223,26 +235,28 @@ def main():
     if tmp:
         kovets=tmp.name
         if kovets:
-            url=get_url(kovets)
-            st.write(url)
-            if url:
-                tashbets = build_df(url)
-                if 'cross' not in st.session_state:
-                    st.session_state.cross=tashbets
-                df = make_df(url)
-                hor, ver = clues(url)
-                styled = st.session_state.cross.style.hide().apply(hilight)
-                kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
-                st.sidebar.header(kivun)
-                slider=st.sidebar.empty()
-                writer=st.sidebar.empty()
-                user_input=st.sidebar.empty()
-                btn=st.sidebar.empty()
-                if kivun=='מאוזן':
-                    process(hor,slider,writer,df,user_input,btn,'hor')
-                else:
-                    process(ver,slider,writer,df,user_input,btn,'ver')
-                st.dataframe(styled,height=38 * len(tashbets), hide_index=True)
+            driver=init()
+            if driver:
+                url=get_url(kovets,driver)
+                st.write(url)
+                if url:
+                    tashbets = build_df(url)
+                    if 'cross' not in st.session_state:
+                        st.session_state.cross=tashbets
+                    df = make_df(url)
+                    hor, ver = clues(url)
+                    styled = st.session_state.cross.style.hide().apply(hilight)
+                    kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
+                    st.sidebar.header(kivun)
+                    slider=st.sidebar.empty()
+                    writer=st.sidebar.empty()
+                    user_input=st.sidebar.empty()
+                    btn=st.sidebar.empty()
+                    if kivun=='מאוזן':
+                        process(hor,slider,writer,df,user_input,btn,'hor')
+                    else:
+                        process(ver,slider,writer,df,user_input,btn,'ver')
+                    st.dataframe(styled,height=38 * len(tashbets), hide_index=True)
 
 if __name__=='__main__':
     main()
