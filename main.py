@@ -49,11 +49,11 @@ def progress():
 def main():
     st.set_page_config(layout="wide")
     tmp=st.file_uploader('העלה בבקשה את קובץ התשבץ')
-    progress()
     if tmp:
         kovets=StringIO(tmp.getvalue().decode('utf-8'))
         if kovets:
             url=get_url(kovets)
+            progress()
             st.write(url)
             if 'url' not in st.session_state:
                 st.session_state.url=url
