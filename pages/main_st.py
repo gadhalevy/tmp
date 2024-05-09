@@ -3,28 +3,6 @@ import requests,string
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
-from selenium import webdriver
-import time
-@st.cache_data
-def get_url(file):
-    driver=webdriver.Firefox()
-    driver.get('https://geek.co.il/~mooffie/crossword/')
-    form=driver.find_element(by='id',value='crossword-form')
-    area=form.find_element(by='id',value='raw-words')
-    with open(file,'r') as f:
-        words=f.read()
-    area.clear()
-    area.send_keys(words)
-    submit=form.find_element(by='name',value='action_same')
-    submit.click()
-    form=driver.find_element(by='id',value='crossword-form')
-    time.sleep(1)
-    link=form.find_element(by='id',value='save-create-temp-btn')
-    link.click()
-    url=driver.current_url
-    time.sleep(2)
-    driver.quit()
-    return url
 
 @st.cache_data
 def set_places(url=None):
@@ -207,29 +185,26 @@ def main():
     # st.write('הקש על הקישור וצור תשבץ')
     # st.write('https://geek.co.il/~mooffie/crossword')
     # url = st.text_input('כתוב את כתובת התשבץ')
-    txt=st.text_area('תכתוב את הגדרות התשבץ בבקשה')
-    kaftor=st.button('לחץ בסיום הכתיבה')
-    if kaftor:
-        url=get_url(txt)
-        st.write(url)
-        if url:
-            tashbets = build_df(url)
-            if 'cross' not in st.session_state:
-                st.session_state.cross=tashbets
-            df = make_df(url)
-            hor, ver = clues(url)
-            styled = st.session_state.cross.style.hide().apply(hilight)
-            kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
-            st.sidebar.header(kivun)
-            slider=st.sidebar.empty()
-            writer=st.sidebar.empty()
-            user_input=st.sidebar.empty()
-            btn=st.sidebar.empty()
-            if kivun=='מאוזן':
-                process(hor,slider,writer,df,user_input,btn,'hor')
-            else:
-                process(ver,slider,writer,df,user_input,btn,'ver')
-            st.dataframe(styled,height=38 * len(tashbets), hide_index=True)
+    st.write(st.session_state.url)
+    url=st.session_state.url
+    if url:
+        tashbets = build_df(url)
+        if 'cross' not in st.session_state:
+            st.session_state.cross=tashbets
+        df = make_df(url)
+        hor, ver = clues(url)
+        styled = st.session_state.cross.style.hide().apply(hilight)
+        kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
+        st.sidebar.header(kivun)
+        slider=st.sidebar.empty()
+        writer=st.sidebar.empty()
+        user_input=st.sidebar.empty()
+        btn=st.sidebar.empty()
+        if kivun=='מאוזן':
+            process(hor,slider,writer,df,user_input,btn,'hor')
+        else:
+            process(ver,slider,writer,df,user_input,btn,'ver')
+        st.dataframe(styled,height=38 * len(tashbets), hide_index=True)
 
 if __name__=='__main__':
     main()
