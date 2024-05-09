@@ -108,7 +108,7 @@ def build_df(url):
               tmp[row_count,col_count]=' '
             col_count+=1
         row_count+=1
-    fliped=np.fliplr(tmp)[:row_count+1,:col_count+1]
+    fliped=np.fliplr(tmp)
     df=pd.DataFrame(fliped)
     return df
 
