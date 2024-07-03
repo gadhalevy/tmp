@@ -15,7 +15,7 @@ def init():
     service = Service(GeckoDriverManager().install())
     driver = webdriver.Firefox(
         options=firefoxOptions,
-        service=service,
+        # service=service,
     )
     return  driver
 
