@@ -2,34 +2,22 @@
 import streamlit as st
 import time
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.os_manager import ChromeType
-# from selenium.webdriver.firefox.options import Options
-# from selenium.webdriver.firefox.service import Service
-# from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
 from io import StringIO
 
 @st.cache_resource
 def init():
-    options = Options()
-    options.add_argument("--disable-gpu")
-    options.add_argument("--headless")
-    return webdriver.Chrome(
-        service=Service(
-            ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
-        ),
-        options=options,
+    firefoxOptions = Options()
+    firefoxOptions.add_argument("--headless")
+    firefoxOptions.add_argument("--disable-gpu")
+    service = Service(GeckoDriverManager().install())
+    driver = webdriver.Firefox(
+        options=firefoxOptions,
+        service=service,
     )
-    # firefoxOptions = Options()
-    # firefoxOptions.add_argument("--headless")
-    # service = Service(GeckoDriverManager().install())
-    # driver = webdriver.Firefox(
-    #     options=firefoxOptions,
-    #     service=service,
-    # )
-    # return  driver
+    return  driver
 
 def get_url(words):
     # driver=webdriver.Firefox()
