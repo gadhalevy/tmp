@@ -20,8 +20,8 @@ def init():
     return  driver
 
 def get_url(words):
-    # driver=webdriver.Firefox()
-    driver=init()
+    driver=webdriver.Firefox()
+    # driver=init()
     driver.get('https://geek.co.il/~mooffie/crossword/')
     form=driver.find_element(by='id',value='crossword-form')
     area=form.find_element(by='id',value='raw-words')
