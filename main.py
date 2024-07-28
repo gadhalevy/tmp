@@ -70,6 +70,7 @@ def main():
                 if 'url' not in st.session_state:
                     st.session_state.url=url
                 st.write(st.session_state.url)
+                length=0
     # if tmp:
     #     kovets=StringIO(tmp.getvalue().decode('utf-8'))
     if kovets is not None:
