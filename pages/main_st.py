@@ -193,6 +193,8 @@ def main():
             st.session_state.cross=tashbets
         df = make_df(url)
         hor, ver = clues(url)
+        if (len(hor)+len(ver))<int(st.session_state.length):
+            st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
         styled = st.session_state.cross.style.hide().apply(hilight)
         kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
         st.sidebar.header(kivun)

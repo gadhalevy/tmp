@@ -50,15 +50,26 @@ def progress():
 def main():
     kovets=None
     st.set_page_config(layout="wide")
-    ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום'))
+    ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'))
     if ofen=='העלאת קובץ':
         tmp=st.file_uploader('העלה בבקשה את קובץ התשבץ')
         if tmp:
             kovets=StringIO(tmp.getvalue().decode('utf-8'))
-    else:
+            length=len(kovets.readlines())
+    elif ofen=='יצירה במקום':
+        st.info('לאחר סיום כתיבת ההגדרות מומלץ לגבות אותן בקובץ לפני מעבר לשלב הבא')
         txt=st.text_area('כתוב הגדרות')
         if st.sidebar.button('העלה'):
             kovets=txt
+            length=len(txt.split('\n'))
+    else:
+        url=st.text_input('כתוב קישור לתשבץ')
+        if url:
+            send_url=st.button('שלח קישור')
+            if send_url:
+                if 'url' not in st.session_state:
+                    st.session_state.url=url
+                st.write(st.session_state.url)
     # if tmp:
     #     kovets=StringIO(tmp.getvalue().decode('utf-8'))
     if kovets is not None:
@@ -67,6 +78,8 @@ def main():
         st.write(url)
         if 'url' not in st.session_state:
             st.session_state.url=url
+        if 'length' not in st.session_state:
+            st.session_state.length=length
 
 if __name__=='__main__':
     main()
