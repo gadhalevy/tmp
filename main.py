@@ -47,6 +47,12 @@ def progress():
     time.sleep(1)
     my_bar.empty()
 
+def set_session_state(url,length):
+    if 'url' not in st.session_state:
+        st.session_state.url=url
+    if 'length' not in st.session_state:
+        st.session_state.length=length
+
 def main():
     kovets=None
     st.set_page_config(layout="wide")
@@ -67,20 +73,12 @@ def main():
         if url:
             send_url=st.button('שלח קישור')
             if send_url:
-                if 'url' not in st.session_state:
-                    st.session_state.url=url
-                st.write(st.session_state.url)
-                length=0
-    # if tmp:
-    #     kovets=StringIO(tmp.getvalue().decode('utf-8'))
+                set_session_state(url,length=0)
     if kovets is not None:
         url=get_url(kovets)
         progress()
         st.write(url)
-        if 'url' not in st.session_state:
-            st.session_state.url=url
-        if 'length' not in st.session_state:
-            st.session_state.length=length
+        set_session_state(url, length)
 
 if __name__=='__main__':
     main()
