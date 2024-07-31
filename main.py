@@ -70,7 +70,7 @@ def main():
             kovets=txt
             length=len(txt.split('\n'))
     else:
-        url=st.text_input('כתוב קישור לתשבץ')
+        url=st.text_input('כתוב קישור לתשבץ',value='https://geek.co.il/~mooffie/crossword/temporary/')
         if url:
             send_url=st.button('שלח קישור')
             if send_url:
