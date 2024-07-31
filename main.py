@@ -29,6 +29,7 @@ def get_url(words):
     area.send_keys(words)
     submit=form.find_element(by='name',value='action_same')
     submit.click()
+    driver.implicitly_wait(2)
     form=driver.find_element(by='id',value='crossword-form')
     driver.implicitly_wait(2)
     link=form.find_element(by='id',value='save-create-temp-btn')
