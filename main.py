@@ -6,7 +6,6 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 from io import StringIO
-from selenium.webdriver.common.by import By
 
 @st.cache_resource
 def init():
@@ -32,7 +31,7 @@ def get_url(words):
     submit.click()
     driver.implicitly_wait(2)
     form=driver.find_element(by='id',value='crossword-form')
-    tbl=form.find_element(By.CLASS_NAME,value='control-panel')
+    tbl=form.find_element(by='class_name',value='control-panel')
     # driver.implicitly_wait(2)
     link=tbl.find_element(by='id',value='save-create-temp-btn')
     link.click()
