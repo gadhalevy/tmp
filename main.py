@@ -31,8 +31,9 @@ def get_url(words):
     submit.click()
     time.sleep(1)
     form=driver.find_element(by='id',value='crossword-form')
+    tbl=form.find_element(by='class',value='control-panel')
     # driver.implicitly_wait(2)
-    link=form.find_element(by='id',value='save-create-temp-btn')
+    link=tbl.find_element(by='id',value='save-create-temp-btn')
     link.click()
     url=driver.current_url
     time.sleep(2)
