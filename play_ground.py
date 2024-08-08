@@ -5,6 +5,7 @@ from io import StringIO
 import time
 import os
 os.system("playwright install")
+os.system("sudo playwright install-deps")
 def run(playwright: Playwright,words) -> None:
     browser = playwright.chromium.launch(headless=True)
     context = browser.new_context()
