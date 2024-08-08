@@ -3,7 +3,8 @@ from playwright.sync_api import Playwright
 import streamlit as st
 from io import StringIO
 import time
-
+import os
+os.system("playwright install")
 def run(playwright: Playwright,words) -> None:
     browser = playwright.chromium.launch(headless=True)
     context = browser.new_context()
