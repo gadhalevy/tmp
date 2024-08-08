@@ -1,1 +1,4 @@
 firefox-esr
+libnss3
+libnspr4
+libgbm1
