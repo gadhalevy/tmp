@@ -7,7 +7,7 @@ import os
 os.system("playwright install")
 os.system("playwright install-deps")
 def run(playwright: Playwright,words) -> None:
-    browser = playwright.chromium.launch(headless=True)
+    browser = playwright.firefox.launch(headless=True)
     context = browser.new_context()
     page = context.new_page()
     page.goto("https://geek.co.il/~mooffie/crossword/")
