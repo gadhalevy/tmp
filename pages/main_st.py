@@ -196,7 +196,7 @@ def main():
         st.write(len(hor),len(ver),st.session_state.length)
         if (len(hor)+len(ver))>int(st.session_state.length)+2:
             st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
-        styled = st.session_state.cross.iloc.style.hide().apply(hilight)
+        styled = st.session_state.cross.style.hide().apply(hilight)
         kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
         st.sidebar.header(kivun)
         slider=st.sidebar.empty()
