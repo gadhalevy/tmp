@@ -35,7 +35,7 @@ def progress():
         my_bar.progress(percent_complete + 1, text=progress_text)
     time.sleep(1)
     my_bar.empty()
-
+@st.cache_data
 def set_session_state(url,length):
     if 'url' not in st.session_state:
         st.session_state.url=url

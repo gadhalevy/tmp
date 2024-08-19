@@ -110,7 +110,7 @@ def build_df(url):
         row_count+=1
     fliped=np.fliplr(tmp)
     df=pd.DataFrame(fliped)
-    return df
+    return df,row_count,col_count
 
 @st.cache_data
 def make_clues_idxs(lst):
@@ -188,14 +188,15 @@ def main():
     st.write(st.session_state.url)
     url=st.session_state.url
     if url:
-        tashbets = build_df(url)
+        tashbets,rows,cols = build_df(url)
         if 'cross' not in st.session_state:
-            st.session_state.cross=tashbets
+            st.session_state.cross=tashbets.iloc[:rows,19-cols:]
         df = make_df(url)
         hor, ver = clues(url)
-        if (len(hor)+len(ver))<int(st.session_state.length):
+        st.write(len(hor),len(ver),st.session_state.length)
+        if (len(hor)+len(ver))>int(st.session_state.length):
             st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
-        styled = st.session_state.cross.style.hide().apply(hilight)
+        styled = st.session_state.cross.iloc[:rows+1,19-cols:].style.hide().apply(hilight)
         kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
         st.sidebar.header(kivun)
         slider=st.sidebar.empty()
@@ -206,7 +207,7 @@ def main():
             process(hor,slider,writer,df,user_input,btn,'hor')
         else:
             process(ver,slider,writer,df,user_input,btn,'ver')
-        st.dataframe(styled,height=38 * len(tashbets), hide_index=True)
+        st.dataframe(styled,height=38 * len(tashbets.iloc[:rows+1,19-cols:]), hide_index=True)
 
 if __name__=='__main__':
     main()
