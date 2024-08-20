@@ -190,11 +190,11 @@ def main():
     if url:
         tashbets,rows,cols = build_df(url)
         if 'cross' not in st.session_state:
-            st.session_state.cross=tashbets.iloc[:rows,19-cols:]
+            st.session_state.cross=tashbets
         df = make_df(url)
         hor, ver = clues(url)
         st.write(len(hor),len(ver),st.session_state.length)
-        if (len(hor)+len(ver))>int(st.session_state.length)+2:
+        if (len(hor)+len(ver))>int(st.session_state.length):
             st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
         styled = st.session_state.cross.style.hide().apply(hilight)
         kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
@@ -207,7 +207,7 @@ def main():
             process(hor,slider,writer,df,user_input,btn,'hor')
         else:
             process(ver,slider,writer,df,user_input,btn,'ver')
-        st.dataframe(styled,height=38 * len(tashbets.iloc[:rows+1,19-cols:]), hide_index=True)
+        st.dataframe(styled,height=38 * len(tashbets), hide_index=True)
 
 if __name__=='__main__':
     main()
