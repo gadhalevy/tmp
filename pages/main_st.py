@@ -203,6 +203,7 @@ def main():
         writer=st.sidebar.empty()
         user_input=st.sidebar.empty()
         btn=st.sidebar.empty()
+        st.sidebar.button('רענן מסך')
         if kivun=='מאוזן':
             process(hor,slider,writer,df,user_input,btn,'hor')
         else:
