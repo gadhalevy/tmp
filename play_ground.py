@@ -39,8 +39,13 @@ def progress():
 def set_session_state(url,length):
     if 'url' not in st.session_state:
         st.session_state.url=url
+    else:
+        st.session_state.url = url
     if 'length' not in st.session_state:
         st.session_state.length=length
+    else:
+        st.session_state.length = length
+
 
 def main():
     kovets=None
