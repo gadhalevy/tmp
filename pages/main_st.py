@@ -182,6 +182,8 @@ def process(direction,slider,writer,df,user_input,btn,kivun):
 
 def main():
     st.set_page_config(layout="wide")
+    if 'url' in st.session_state:
+        st.session_state.url=st.session_state.url
     # st.write('הקש על הקישור וצור תשבץ')
     # st.write('https://geek.co.il/~mooffie/crossword')
     # url = st.text_input('כתוב את כתובת התשבץ')
