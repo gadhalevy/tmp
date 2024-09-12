@@ -250,7 +250,7 @@ def main():
         col1,col2=st.columns([10,1])
         col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
         if pitaronot:
-            col2.info(' '.join(df['answers'].values))
+            col2.info('|'.join(df['answers'].values))
 
 if __name__=='__main__':
     main()
