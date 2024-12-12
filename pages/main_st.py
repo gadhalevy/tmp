@@ -1,8 +1,29 @@
 #This will not run on online IDE
+from idlelib.autocomplete import AutoComplete
+
 import requests,string
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
+from streamlit_searchbox import st_searchbox
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+from streamlit_lottie import st_lottie
+
+@st.cache_resource()
+def init():
+    '''
+    Init firebase through cloud. Same as verifier
+    :return:
+    '''
+    try:
+        firebase_admin.delete_app(firebase_admin.get_app())
+    except ValueError:
+        pass
+    cred = credentials.Certificate(dict(st.secrets['fb']))
+    # cred = credentials.Certificate('fb_key.json')
+    firebase_admin.initialize_app(cred, {'databaseURL': 'https://Lab9-c9743.firebaseio.com/'})
 
 @st.cache_data
 def set_places(url=None):
@@ -220,37 +241,99 @@ def process(direction,slider,writer,df,user_input,btn,kivun):
         if pitaron:
             on_ans(ans, length, x, y, kivun)
 
+def search_scores(searchterm: str) -> list:
+    try:
+        return db.reference('/cross/scores/').get().keys() if searchterm else []
+    except AttributeError:
+        return []
+
+def get_scores(poter):
+    '''
+    :param poter: What was filled in searchBox
+    :return:
+    '''
+    ref = db.reference('/cross/scores/')
+    scores = ref.get()
+    # Session contains what it finds
+    new_ref = db.reference(f'/cross/scores/{st.session_state.poter['search']}')
+    val = 1
+    if scores:
+        if poter in scores.keys():
+            new_ref = db.reference(f'/cross/scores/{poter}')
+            score = scores.get(poter)
+            val = int(score) + 1
+    new_ref.set(val)
+
+def show_res(col3):
+    ref=db.reference(f'/cross/scores/')
+    tmp=ref.get()
+    dic=dict(sorted(tmp.items(), key=lambda item: item[1],reverse=True))
+    keys=list(dic.keys())
+    scores=list(dic.values())
+    colors=['red','green','blue','orange','violet']
+    for i in range(len(keys)):
+        num= '#' * (7-int(scores[i]))
+        col3.write(f' {num}  :{colors[i % len(colors)]}[{keys[i]} {scores[i]}]')
+
+def del_ref():
+    ref=db.reference('/cross/scores/')
+    ref.delete()
+
 def main():
     st.set_page_config(layout="wide")
-    if 'url' in st.session_state:
-        st.session_state.url=st.session_state.url
-    st.write(st.session_state.url)
-    url=st.session_state.url
-    if url:
-        tashbets,rows,cols = build_df(url)
-        if 'cross' not in st.session_state:
-            st.session_state.cross=tashbets
-        df = make_df(url)
-        hor, ver = clues(url)
-        if (len(df))<int(st.session_state.length):
-            st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
-        styled = st.session_state.cross.style.apply(hilight)
-        kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
-        st.sidebar.header(kivun)
-        slider=st.sidebar.empty()
-        writer=st.sidebar.empty()
-        user_input=st.sidebar.empty()
-        btn=st.sidebar.empty()
-        st.sidebar.button('רענן מסך')
-        if kivun=='מאוזן':
-            process(hor,slider,writer,df,user_input,btn,'hor')
-        else:
-            process(ver,slider,writer,df,user_input,btn,'ver')
-        pitaronot=st.sidebar.checkbox('האם להציג פיתרונות?')
-        col1,col2=st.columns([10,1])
-        col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
-        if pitaronot:
-            col2.info('|'.join(df['answers'].values))
+    tab1, tab2 = st.tabs(['תשבץ', 'דירוג'])
+    with tab1:
+        if 'url' in st.session_state:
+            st.session_state.url=st.session_state.url
+        st.write(st.session_state.url)
+        url=st.session_state.url
+        if url:
+            tashbets,rows,cols = build_df(url)
+            if 'cross' not in st.session_state:
+                st.session_state.cross=tashbets
+            df = make_df(url)
+            hor, ver = clues(url)
+            if (len(df))<int(st.session_state.length):
+                st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
+            styled = st.session_state.cross.style.apply(hilight)
+            kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
+            st.sidebar.header(kivun)
+            slider=st.sidebar.empty()
+            writer=st.sidebar.empty()
+            user_input=st.sidebar.empty()
+            btn=st.sidebar.empty()
+            st.sidebar.button('רענן מסך')
+            if kivun=='מאוזן':
+                process(hor,slider,writer,df,user_input,btn,'hor')
+            else:
+                process(ver,slider,writer,df,user_input,btn,'ver')
+            pitaronot=st.sidebar.checkbox('האם להציג פיתרונות?')
+            col1,col2=st.columns([10,1])
+            col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
+            if pitaronot:
+                col2.info('|'.join(df['answers'].values))
+    with tab2:
+        # st.write(df['answers'].to_list())
+        init()
+        col1,col2,col3=st.columns([4,1,2])
+        with col3:
+            poter = st_searchbox(
+                search_scores,
+                placeholder="Search User... ",
+                key="poter",
+            )
+        with col2:
+            submit=col2.button('נקד פותר')
+        if submit:
+            get_scores(poter)
+            show_res(col3)
+        if col3.button('סיום',type='primary'):
+            show_res(col3)
+            st_lottie('https://lottie.host/ea1fa0a7-3547-458d-868e-b14f85b8d82d/rTfCy1CzPo.json',height=800,width=1200)
+            del_ref()
+
+
+
 
 if __name__=='__main__':
     main()
