@@ -181,7 +181,13 @@ def make_clues_idxs(lst):
 
 @st.cache_data
 def hilight(s):
-    return ['background-color: red' if ss==' ' else '' for ss in s  ]
+    # return props if v==' ' else None
+    return  ['background-color: red' if ss==' ' else '' for ss in s  ]
+
+@st.cache_data
+def txt_color(v, p=''):
+    return p if v is not None else None
+    # return p if v.strip().isalnum() else None
 
 @st.cache_data
 def slider_nums(lst):
@@ -295,7 +301,10 @@ def main():
             hor, ver = clues(url)
             if (len(df))<int(st.session_state.length):
                 st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
-            styled = st.session_state.cross.style.apply(hilight)
+            # styled=st.session_state.cross.style.set_table_styles([{'selector':'','props':'color: blue;'}],overwrite=True,css_class_names={'data':'data'})
+            # styled = st.session_state.cross.style.apply(hilight)
+            # styled = st.session_state.cross.style.map(txt_color, p='color:blue;font-size: 25em;font-weight: bold;') \
+            #     .map(hilight,props='background-color:red')
             kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
             st.sidebar.header(kivun)
             slider=st.sidebar.empty()
@@ -309,7 +318,11 @@ def main():
                 process(ver,slider,writer,df,user_input,btn,'ver')
             pitaronot=st.sidebar.checkbox('האם להציג פיתרונות?')
             col1,col2=st.columns([10,1])
-            col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
+            styled = st.session_state.cross.style.set_table_styles([{'selector': '', 'props': 'color: blue;font-weight:bold;font-size:1.5em;'}],overwrite=False)
+            styled=styled.apply(hilight).hide().hide(axis="columns")
+            # Styler not fully implemented in streamlit, switch to html.
+            st.markdown(styled.to_html(), unsafe_allow_html=True)
+            # col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
             if pitaronot:
                 col2.info('|'.join(df['answers'].values))
     with tab2:
