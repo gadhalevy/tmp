@@ -69,7 +69,7 @@ def main():
             send_url=st.button('שלח קישור')
             if send_url:
                 set_session_state(url,length=0)
-                st.info('הקישור נשלח בהצלחה!')
+                st.info('!הקישור נשלח בהצלחה')
     if kovets is not None:
         url=get_url(kovets)
         progress()

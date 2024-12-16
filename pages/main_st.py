@@ -195,6 +195,22 @@ def slider_nums(lst):
     nums.insert(0,'0')
     return nums
 
+def find_indxs(kivun,name):
+    '''
+
+    :param kivun: list of horizontal or vertical clues
+    :param kivun_name: direction name
+    :return: session states of indexes of each direction
+    '''
+    idxs=slider_nums(kivun)[1:]
+    idxs=[i.strip().replace('.','') for i in idxs]
+    if name=='ver':
+        idx='v_idxs'
+    else:
+        idx='h_idxs'
+    if f'{idx}' not in st.session_state:
+        st.session_state[f'{idx}']=idxs
+
 @st.cache_data
 def get_params(df,txt):
     res = df.loc[(df['defs'] == txt[3:]) | (df['defs'] == txt[4:])]
@@ -207,22 +223,37 @@ def get_params(df,txt):
     except IndexError:
         pass
 
+def insert_ot(x,y,a,num,kivun):
+    if kivun=='hor':
+        curr='h_idxs'
+        other='v_idxs'
+    else:
+        other='h_idxs'
+        curr='v_idxs'
+    # st.write(num)
+    # st.write(st.session_state[f'{idx}'])
+    if num in st.session_state[f'{other}']:
+        st.session_state.cross.iloc[x, y] = a + ' ' + num
+        try:
+            st.session_state[f'{curr}'].remove(num)
+        except ValueError:
+            pass
+    else:
+        st.session_state.cross.iloc[x, y] = a
+
 @st.cache_data
 def on_ans(ans,length,x,y,curr):
     if len(ans.strip())==length:
-        for a in ans:
+        for i,a in enumerate(ans):
             if len(st.session_state.cross.iloc[x,y])==0:
-                st.session_state.cross.iloc[x,y]='  '+a
-            elif len(st.session_state.cross.iloc[x,y])<=2:
+                st.session_state.cross.iloc[x, y] = a
+            elif len(st.session_state.cross.iloc[x, y]) <= 2:
                 num=st.session_state.cross.iloc[x,y]
                 if num.isnumeric():
-                    st.session_state.cross.iloc[x,y]=num+' '+a
-            elif len(st.session_state.cross.iloc[x,y])>=3:
-                if len(st.session_state.cross.iloc[x,y].strip())>=3:
-                    num,ot=st.session_state.cross.iloc[x,y].strip().split()
-                    st.session_state.cross.iloc[x,y]=num+'  '+a
-                else:
-                    st.session_state.cross.iloc[x,y]='  '+a
+                    insert_ot(x,y,a,num,curr)
+            elif len(st.session_state.cross.iloc[x, y]) >= 3:
+                ot,num=st.session_state.cross.iloc[x,y].strip().split()
+                insert_ot(x,y,a,num,curr)
             if curr=='hor':
                 y -= 1
             elif curr=='ver':
@@ -299,12 +330,14 @@ def main():
                 st.session_state.cross=tashbets
             df = make_df(url)
             hor, ver = clues(url)
+            # for i in (ver,hor):
+            #     find_indxs(i)
+            find_indxs(hor,'hor')
+            find_indxs(ver, 'ver')
+            # st.write(st.session_state.v_idxs)
+            # st.write(st.session_state.h_idxs)
             if (len(df))<int(st.session_state.length):
                 st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
-            # styled=st.session_state.cross.style.set_table_styles([{'selector':'','props':'color: blue;'}],overwrite=True,css_class_names={'data':'data'})
-            # styled = st.session_state.cross.style.apply(hilight)
-            # styled = st.session_state.cross.style.map(txt_color, p='color:blue;font-size: 25em;font-weight: bold;') \
-            #     .map(hilight,props='background-color:red')
             kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
             st.sidebar.header(kivun)
             slider=st.sidebar.empty()
