@@ -9,3 +9,4 @@ selenium
 webdriver-manager
 google_crc32c
 streamlit-searchbox
+firebase-admin
