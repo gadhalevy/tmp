@@ -7,3 +7,4 @@ numpy
 streamlit
 selenium
 webdriver-manager
+google_crc32c
