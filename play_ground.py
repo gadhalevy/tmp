@@ -36,6 +36,7 @@ def progress():
         my_bar.progress(percent_complete + 1, text=progress_text)
     time.sleep(1)
     my_bar.empty()
+
 @st.cache_data
 def set_session_state(url,length):
     if 'url' not in st.session_state:
@@ -64,7 +65,7 @@ def main():
             kovets=txt
             length=len(txt.split('\n'))
     else:
-        url=st.text_input('כתוב קישור לתשבץ',value='https://geek.co.il/~mooffie/crossword/')
+        url=st.text_input('כתוב קישור לתשבץ',value='https://geek.co.il/~mooffie/crossword/temporary/')
         if url:
             send_url=st.button('שלח קישור')
             if send_url:

@@ -271,7 +271,7 @@ def process(direction,slider,writer,df,user_input,btn,kivun):
     choose_h = slider.select_slider('בחר הגדרה ', options=nums, value='0')
     if choose_h != '0':
         txt = slider_txt(direction, choose_h)
-        writer.write(txt)
+        writer.markdown(f'<div style=direction:rtl;font-weight:bold;>{txt}</div>',unsafe_allow_html=True)
         length, x, y = get_params(df, txt)
         ans = user_input.text_input( 'פתרון ' ,)
         pitaron = btn.button('השב ')
