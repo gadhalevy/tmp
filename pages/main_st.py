@@ -349,7 +349,7 @@ def main():
                 process(hor,slider,writer,df,user_input,btn,'hor')
             else:
                 process(ver,slider,writer,df,user_input,btn,'ver')
-            pitaronot=st.sidebar.checkbox('האם להציג פיתרונות?')
+            pitaronot=st.sidebar.checkbox('?האם להציג פיתרונות')
             col1,col2=st.columns([10,1])
             styled = st.session_state.cross.style.set_table_styles([{'selector': '', 'props': 'color: blue;font-weight:bold;font-size:1.5em;'}],overwrite=False)
             styled=styled.apply(hilight).hide().hide(axis="columns")
