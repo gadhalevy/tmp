@@ -1,6 +1,6 @@
 from google_crc32c.python import value
-from playwright.sync_api import sync_playwright
-from playwright.sync_api import Playwright
+# from playwright.sync_api import sync_playwright
+# from playwright.sync_api import Playwright
 import streamlit as st
 from io import StringIO
 import time
@@ -50,32 +50,39 @@ def set_session_state(url,length):
 
 
 def main():
-    kovets=None
-    st.set_page_config(layout="wide")
-    ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'),index=2)
-    if ofen=='העלאת קובץ':
-        tmp=st.file_uploader('העלה בבקשה את קובץ התשבץ')
-        if tmp:
-            kovets=tmp.getvalue().decode('utf-8')
-            length=len(kovets.split('\n'))
-    elif ofen=='יצירה במקום':
-        st.info('לאחר סיום כתיבת ההגדרות מומלץ לגבות אותן בקובץ לפני מעבר לשלב הבא')
-        txt=st.text_area('כתוב הגדרות')
-        if st.sidebar.button('העלה'):
-            kovets=txt
-            length=len(txt.split('\n'))
-    else:
-        url=st.text_input('כתוב קישור לתשבץ',value='https://geek.co.il/~mooffie/crossword/temporary/')
-        if url:
-            send_url=st.button('שלח קישור')
-            if send_url:
-                set_session_state(url,length=0)
-                st.info('!הקישור נשלח בהצלחה')
-    if kovets is not None:
-        url=get_url(kovets)
-        progress()
-        st.write(url)
-        set_session_state(url, length)
+    '''
+    Run playwrite to make cross creation automatic.
+    Suppressed, have to create cross in advance, using send link option.
+    Uncomment code if you want to use the automatic version.
+
+    :return:
+    '''
+    # kovets=None
+    # st.set_page_config(layout="wide")
+    # ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'),index=2)
+    # if ofen=='העלאת קובץ':
+    #     tmp=st.file_uploader('העלה בבקשה את קובץ התשבץ')
+    #     if tmp:
+    #         kovets=tmp.getvalue().decode('utf-8')
+    #         length=len(kovets.split('\n'))
+    # elif ofen=='יצירה במקום':
+    #     st.info('לאחר סיום כתיבת ההגדרות מומלץ לגבות אותן בקובץ לפני מעבר לשלב הבא')
+    #     txt=st.text_area('כתוב הגדרות')
+    #     if st.sidebar.button('העלה'):
+    #         kovets=txt
+    #         length=len(txt.split('\n'))
+    # else:
+    url=st.text_input('כתוב קישור לתשבץ',value='https://geek.co.il/~mooffie/crossword/temporary/')
+    if url:
+        send_url=st.button('שלח קישור')
+        if send_url:
+            set_session_state(url,length=0)
+            st.info('!הקישור נשלח בהצלחה')
+    # if kovets is not None:
+    #     url=get_url(kovets)
+    #     progress()
+    #     st.write(url)
+    #     set_session_state(url, length)
 
 if __name__=='__main__':
     main()
