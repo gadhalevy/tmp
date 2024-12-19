@@ -5,37 +5,37 @@ import streamlit as st
 from io import StringIO
 import time
 import os
-os.system("playwright install")
-os.system("playwright install-deps")
-def run(playwright: Playwright,words) -> None:
-    browser = playwright.firefox.launch(headless=True)
-    context = browser.new_context()
-    page = context.new_page()
-    page.goto("https://geek.co.il/~mooffie/crossword/")
-    page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").click()
-    page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").press("ControlOrMeta+a")
-    page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").fill(words)
-    page.get_by_role("button", name="בנה את התשבץ").click()
-    page.get_by_role("button", name="צוֹר קישור").click()
-    url=page.url
-    # ---------------------
-    context.close()
-    browser.close()
-    return url
+# os.system("playwright install")
+# os.system("playwright install-deps")
+# def run(playwright: Playwright,words) -> None:
+#     browser = playwright.firefox.launch(headless=True)
+#     context = browser.new_context()
+#     page = context.new_page()
+#     page.goto("https://geek.co.il/~mooffie/crossword/")
+#     page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").click()
+#     page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").press("ControlOrMeta+a")
+#     page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").fill(words)
+#     page.get_by_role("button", name="בנה את התשבץ").click()
+#     page.get_by_role("button", name="צוֹר קישור").click()
+#     url=page.url
+#     # ---------------------
+#     context.close()
+#     browser.close()
+#     return url
+#
+# def get_url(words):
+#     with sync_playwright() as playwright:
+#         url=run(playwright,words)
+#         return url
 
-def get_url(words):
-    with sync_playwright() as playwright:
-        url=run(playwright,words)
-        return url
-
-def progress():
-    progress_text = "Operation in progress. Please wait."
-    my_bar = st.progress(0, text=progress_text)
-    for percent_complete in range(100):
-        time.sleep(0.01)
-        my_bar.progress(percent_complete + 1, text=progress_text)
-    time.sleep(1)
-    my_bar.empty()
+# def progress():
+#     progress_text = "Operation in progress. Please wait."
+#     my_bar = st.progress(0, text=progress_text)
+#     for percent_complete in range(100):
+#         time.sleep(0.01)
+#         my_bar.progress(percent_complete + 1, text=progress_text)
+#     time.sleep(1)
+#     my_bar.empty()
 
 @st.cache_data
 def set_session_state(url,length):
