@@ -354,7 +354,7 @@ def main():
             styled = st.session_state.cross.style.set_table_styles([{'selector': '', 'props': 'color: blue;font-weight:bold;font-size:1.5em;'}],overwrite=False)
             styled=styled.apply(hilight).hide().hide(axis="columns")
             # Styler not fully implemented in streamlit, switch to html.
-            st.markdown(styled.to_html(), unsafe_allow_html=True)
+            col1.markdown(styled.to_html(), unsafe_allow_html=True)
             # col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
             if pitaronot:
                 col2.info('|'.join(df['answers'].values))
