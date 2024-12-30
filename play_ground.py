@@ -1,6 +1,6 @@
-from google_crc32c.python import value
-# from playwright.sync_api import sync_playwright
-# from playwright.sync_api import Playwright
+# from google_crc32c.python import value
+from playwright.sync_api import sync_playwright
+from playwright.sync_api import Playwright
 import streamlit as st
 from io import StringIO
 import time
