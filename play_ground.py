@@ -72,12 +72,12 @@ def main():
             kovets=txt
             length=len(txt.split('\n'))
     else:
-    url=st.text_input('כתוב קישור לתשבץ',value='https://geek.co.il/~mooffie/crossword/temporary/')
-    if url:
-        send_url=st.button('שלח קישור')
-        if send_url:
-            set_session_state(url,length=0)
-            st.info('!הקישור נשלח בהצלחה')
+        url=st.text_input('כתוב קישור לתשבץ',value='https://geek.co.il/~mooffie/crossword/temporary/')
+        if url:
+            send_url=st.button('שלח קישור')
+            if send_url:
+                set_session_state(url,length=0)
+                st.info('!הקישור נשלח בהצלחה')
     if kovets is not None:
         url=get_url(kovets)
         progress()
