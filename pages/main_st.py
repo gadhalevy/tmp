@@ -323,7 +323,6 @@ def main():
         page_title="פתור תשבץ",
         page_icon="🤔",
     )
-    st_pages.add_page_title('פתור תשבץ', '🤔')
     tab1, tab2 = st.tabs(['פתור תשבץ', 'דירוג משתמשים'])
     # Eliminate st.session_state url not declared bug.
     try:
