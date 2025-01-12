@@ -1,7 +1,7 @@
 #This will not run on online IDE
 from idlelib.autocomplete import AutoComplete
 
-import requests,string
+import requests,string,os
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
@@ -318,65 +318,71 @@ def del_ref():
 
 def main():
     st.set_page_config(layout="wide")
-    tab1, tab2 = st.tabs(['תשבץ', 'דירוג'])
-    with tab1:
-        if 'url' in st.session_state:
-            st.session_state.url=st.session_state.url
-        st.write(st.session_state.url)
-        url=st.session_state.url
-        if url:
-            tashbets,rows,cols = build_df(url)
-            if 'cross' not in st.session_state:
-                st.session_state.cross=tashbets
-            df = make_df(url)
-            hor, ver = clues(url)
-            # for i in (ver,hor):
-            #     find_indxs(i)
-            find_indxs(hor,'hor')
-            find_indxs(ver, 'ver')
-            # st.write(st.session_state.v_idxs)
-            # st.write(st.session_state.h_idxs)
-            if (len(df))<int(st.session_state.length):
-                st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
-            kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
-            st.sidebar.header(kivun)
-            slider=st.sidebar.empty()
-            writer=st.sidebar.empty()
-            user_input=st.sidebar.empty()
-            btn=st.sidebar.empty()
-            st.sidebar.button('רענן מסך')
-            if kivun=='מאוזן':
-                process(hor,slider,writer,df,user_input,btn,'hor')
-            else:
-                process(ver,slider,writer,df,user_input,btn,'ver')
-            pitaronot=st.sidebar.checkbox('?האם להציג פיתרונות')
-            col1,col2=st.columns([10,1])
-            styled = st.session_state.cross.style.set_table_styles([{'selector': '', 'props': 'color: blue;font-weight:bold;font-size:1.5em;'}],overwrite=False)
-            styled=styled.apply(hilight).hide().hide(axis="columns")
-            # Styler not fully implemented in streamlit, switch to html.
-            col1.markdown(styled.to_html(), unsafe_allow_html=True)
-            # col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
-            if pitaronot:
-                col2.info('|'.join(df['answers'].values))
-    with tab2:
-        # st.write(df['answers'].to_list())
-        init()
-        col1,col2,col3=st.columns([4,1,2])
-        with col3:
-            poter = st_searchbox(
-                search_scores,
-                placeholder="Search User... ",
-                key="poter",
-            )
-        with col2:
-            submit=col2.button('נקד פותר')
-        if submit:
-            get_scores(poter)
-            show_res(col3)
-        if col3.button('סיום',type='primary'):
-            show_res(col3)
-            st_lottie('https://lottie.host/ea1fa0a7-3547-458d-868e-b14f85b8d82d/rTfCy1CzPo.json',height=800,width=1200)
-            del_ref()
+    tab1, tab2 = st.tabs(['פתור תשבץ', 'דירוג משתמשים'])
+    # Eliminate st.session_state url not declared bug.
+    try:
+        with tab1:
+            # if 'url' in st.session_state:
+            #     st.session_state.url=st.session_state.url
+            st.write(st.session_state.url)
+            url=st.session_state.url
+            if url:
+                tashbets,rows,cols = build_df(url)
+                if 'cross' not in st.session_state:
+                    st.session_state.cross=tashbets
+                df = make_df(url)
+                hor, ver = clues(url)
+                # for i in (ver,hor):
+                #     find_indxs(i)
+                find_indxs(hor,'hor')
+                find_indxs(ver, 'ver')
+                # st.write(st.session_state.v_idxs)
+                # st.write(st.session_state.h_idxs)
+                # Playground not activated
+                # if (len(df))<int(st.session_state.length):
+                #     st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
+                kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
+                st.sidebar.header(kivun)
+                slider=st.sidebar.empty()
+                writer=st.sidebar.empty()
+                user_input=st.sidebar.empty()
+                btn=st.sidebar.empty()
+                st.sidebar.button('רענן מסך')
+                if kivun=='מאוזן':
+                    process(hor,slider,writer,df,user_input,btn,'hor')
+                else:
+                    process(ver,slider,writer,df,user_input,btn,'ver')
+                pitaronot=st.sidebar.checkbox('?האם להציג פיתרונות')
+                col1,col2=st.columns([10,1])
+                styled = st.session_state.cross.style.set_table_styles([{'selector': '', 'props': 'color: blue;font-weight:bold;font-size:1.5em;'}],overwrite=False)
+                styled=styled.apply(hilight).hide().hide(axis="columns")
+                # Styler not fully implemented in streamlit, switch to html.
+                col1.markdown(styled.to_html(), unsafe_allow_html=True)
+                # col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
+                if pitaronot:
+                    col2.info('|'.join(df['answers'].values))
+        with tab2:
+            # st.write(df['answers'].to_list())
+            init()
+            col1,col2,col3=st.columns([4,1,2])
+            with col3:
+                poter = st_searchbox(
+                    search_scores,
+                    placeholder="Search User... ",
+                    key="poter",
+                )
+            with col2:
+                submit=col2.button('נקד פותר')
+            if submit:
+                get_scores(poter)
+                show_res(col3)
+            if col3.button('סיום',type='primary'):
+                show_res(col3)
+                st_lottie('https://lottie.host/ea1fa0a7-3547-458d-868e-b14f85b8d82d/rTfCy1CzPo.json',height=800,width=1200)
+                del_ref()
+    # Complains about session_state.url
+    except AttributeError:
+        pass
 
 
 
