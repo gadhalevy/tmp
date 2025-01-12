@@ -74,7 +74,12 @@ def main():
         page_title="צור תשבץ",
         page_icon="🏁",
     )
-    # st_pages.add_page_title('צור תשבץ', '🏁')
+    nav = st_pages.get_nav_from_toml(".streamlit/pages.toml" )
+    pg = st.navigation(nav)
+    st_pages.add_page_title(pg)
+    pg.run()
+
+
     kovets=None
     ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'),index=0)
     if ofen=='העלאת קובץ':
