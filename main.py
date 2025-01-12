@@ -1,7 +1,7 @@
 import os
 os.system("playwright install")
 os.system("playwright install-deps")
-import io
+import st_pages
 import requests,string,os
 from bs4 import BeautifulSoup
 import time,streamlit as st
@@ -74,6 +74,7 @@ def main():
         page_title="צור תשבץ",
         page_icon="🏁",
     )
+    st_pages.add_page_title('צור תשבץ', '🏁')
     kovets=None
     ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'),index=0)
     if ofen=='העלאת קובץ':
