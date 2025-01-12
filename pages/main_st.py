@@ -318,6 +318,10 @@ def del_ref():
 
 def main():
     st.set_page_config(layout="wide")
+    st.set_page_config(
+        page_title="פתור תשבץ",
+        page_icon="🤔",
+    )
     tab1, tab2 = st.tabs(['פתור תשבץ', 'דירוג משתמשים'])
     # Eliminate st.session_state url not declared bug.
     try:

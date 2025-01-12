@@ -70,8 +70,12 @@ def main():
     :return:
     '''
     st.set_page_config(layout="wide")
+    st.set_page_config(
+        page_title="צור תשבץ",
+        page_icon="🏁",
+    )
     kovets=None
-    ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'),index=2)
+    ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'),index=0)
     if ofen=='העלאת קובץ':
         tmp=st.file_uploader('העלה בבקשה את קובץ התשבץ')
         if tmp:
