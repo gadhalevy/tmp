@@ -1,7 +1,7 @@
 import os
 os.system("playwright install")
 os.system("playwright install-deps")
-import st_pages
+from st_pages import show_pages
 import requests,string,os
 from bs4 import BeautifulSoup
 import time,streamlit as st

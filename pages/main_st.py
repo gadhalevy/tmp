@@ -10,7 +10,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 from streamlit_lottie import st_lottie
-import st_pages
+from st_pages import show_pages
 
 @st.cache_resource()
 def init():
