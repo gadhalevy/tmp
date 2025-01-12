@@ -11,4 +11,4 @@ google_crc32c
 streamlit-searchbox
 firebase-admin
 streamlit-lottie
-st-pages==0.1.0
+st-pages==0.2.0
