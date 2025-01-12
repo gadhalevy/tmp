@@ -1,7 +1,7 @@
 import os
 os.system("playwright install")
 os.system("playwright install-deps")
-import asyncio
+import io
 import requests,string,os
 from bs4 import BeautifulSoup
 import time,streamlit as st
@@ -50,7 +50,7 @@ def set_session_state(url):
     else:
         st.session_state.url = url
 
-async def get_msg(url):
+def get_msg(url):
     r =  requests.get(url)
     soup = BeautifulSoup(r.content,'html5lib')  # If this line causes an error, run 'pip install html5lib' or install html5lib
     msg=soup.find('div',attrs={'class':"messages warning"}).get_text()
@@ -61,7 +61,7 @@ async def get_msg(url):
             get_url(url)
     st.write(msg)
 
-async def main():
+def main():
     '''
     Run playwrite to make cross creation automatic.
     Suppressed, have to create cross in advance, using send link option.
