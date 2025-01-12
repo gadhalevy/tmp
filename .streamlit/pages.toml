@@ -1,0 +1,9 @@
+[[pages]]
+path = "main.py"
+name = "צור תשבץ"
+icon = "🏁"
+
+[[pages]]
+path = "pages/main_st.py"
+name = "פתור תשבץ"
+icon = "🤔"
