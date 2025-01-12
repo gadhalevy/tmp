@@ -74,7 +74,8 @@ def main():
         page_title="צור תשבץ",
         page_icon="🏁",
     )
-    st_pages.add_page_title('צור תשבץ')
+    # st_pages.add_page_title('צור תשבץ', '🏁')
+    st_pages.add_page_title('Create', '🏁')
     kovets=None
     ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'),index=0)
     if ofen=='העלאת קובץ':
