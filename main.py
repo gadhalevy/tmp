@@ -2,34 +2,35 @@ import os
 os.system("playwright install")
 os.system("playwright install-deps")
 import asyncio
-from playwright.async_api import async_playwright
 import requests,string,os
 from bs4 import BeautifulSoup
 import time,streamlit as st
+from playwright.sync_api import Playwright, sync_playwright
 
-async def run(playwright,words=None,url=None) -> None:
-    browser = await playwright.firefox.launch(headless=True)
-    context = await browser.new_context()
-    page = await context.new_page()
+
+def run(playwright:Playwright,words=None,url=None) -> None:
+    browser =  playwright.firefox.launch(headless=True)
+    context =  browser.new_context()
+    page =  context.new_page()
     if url is None:
-        await page.goto("https://geek.co.il/~mooffie/crossword/")
-        await page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").press("ControlOrMeta+a")
-        await page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").fill(words)
-        await page.get_by_role("button", name="בנה את התשבץ").click()
-        await page.get_by_role("button", name="צוֹר קישור").click()
+         page.goto("https://geek.co.il/~mooffie/crossword/")
+         page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").press("ControlOrMeta+a")
+         page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").fill(words)
+         page.get_by_role("button", name="בנה את התשבץ").click()
+         page.get_by_role("button", name="צוֹר קישור").click()
     else:
-        await page.goto(url)
-        await page.get_by_role("button", name="ההצעה הבאה").click()
-        await page.get_by_role("button", name="צוֹר קישור").click()
+         page.goto(url)
+         page.get_by_role("button", name="ההצעה הבאה").click()
+         page.get_by_role("button", name="צוֹר קישור").click()
     url=page.url
     # ---------------------
-    await context.close()
-    await browser.close()
+    context.close()
+    browser.close()
     return url
 
-async def get_url(words=None,cond=None):
-    async with async_playwright() as playwright:
-        url = await run(playwright, words,cond)
+def get_url(words=None,cond=None):
+    with sync_playwright() as playwright:
+        url =  run(playwright, words,cond)
         return url
 
 def progress():
@@ -57,7 +58,7 @@ async def get_msg(url):
     if 'הושמטו' in msg:
         again=st.button('לא כל ההגדרות נוצרו אנא הרץ פעם נוספת')
         if again:
-            await get_url(url)
+            get_url(url)
     st.write(msg)
 
 async def main():
@@ -89,14 +90,12 @@ async def main():
                 set_session_state(url)
                 st.info('!הקישור נשלח בהצלחה')
     if kovets is not None:
-        url=await get_url(kovets)
-        await get_msg(url)
+        url= get_url(kovets)
+        get_msg(url)
         progress()
         if url:
             set_session_state(url)
             st.write(url)
 
 if __name__=='__main__':
-    loop = asyncio.ProactorEventLoop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+    main()
