@@ -317,8 +317,8 @@ def del_ref():
     ref.delete()
 
 def main():
-    st.set_page_config(layout="wide")
     st.set_page_config(
+        layout="wide",
         page_title="פתור תשבץ",
         page_icon="🤔",
     )

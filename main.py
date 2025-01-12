@@ -69,8 +69,8 @@ def main():
 
     :return:
     '''
-    st.set_page_config(layout="wide")
     st.set_page_config(
+        layout="wide",
         page_title="צור תשבץ",
         page_icon="🏁",
     )
