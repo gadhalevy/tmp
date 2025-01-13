@@ -10,7 +10,7 @@ from playwright.sync_api import Playwright, sync_playwright
 
 
 def run(playwright:Playwright,words=None,url=None) -> None:
-    browser =  playwright.firefox.launch(headless=True)
+    browser =  playwright.firefox.launch(headless=False)
     context =  browser.new_context()
     page =  context.new_page()
     if url is None:
