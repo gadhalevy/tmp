@@ -2,10 +2,11 @@ import os
 os.system("playwright install")
 os.system("playwright install-deps")
 import st_pages
-import requests,string,os
+import requests,string,os,html5lib
 from bs4 import BeautifulSoup
 import time,streamlit as st
 from playwright.sync_api import Playwright, sync_playwright
+
 
 
 def run(playwright:Playwright,words=None,url=None) -> None:
@@ -53,6 +54,7 @@ def set_session_state(url):
 def get_msg(url):
     r =  requests.get(url)
     soup = BeautifulSoup(r.content,'html5lib')  # If this line causes an error, run 'pip install html5lib' or install html5lib
+    st.write(soup.prettify())
     msg=soup.find('div',attrs={'class':"messages warning"}).get_text()
     st.write(msg)
     if 'הושמטו' in msg:
