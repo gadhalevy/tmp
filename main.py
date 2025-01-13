@@ -30,6 +30,7 @@ def run(playwright:Playwright,words=None,url=None) -> None:
     return url
 
 def get_url(words=None,cond=None):
+    st.write('cond=',cond)
     with sync_playwright() as playwright:
         url =  run(playwright, words,cond)
         return url
