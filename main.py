@@ -54,14 +54,15 @@ def set_session_state(url):
 def get_msg(url):
     r =  requests.get(url)
     soup = BeautifulSoup(r.content,'html5lib')  # If this line causes an error, run 'pip install html5lib' or install html5lib
-    st.write(soup.prettify())
-    msg=soup.find('div',attrs={'class':"messages warning"}).get_text()
-    st.write(msg)
-    if 'הושמטו' in msg:
-        again=st.button('לא כל ההגדרות נוצרו אנא הרץ פעם נוספת')
-        if again:
-            get_url(url)
-    st.write(msg)
+    try:
+        msg=soup.find('div',attrs={'class':"messages warning"}).get_text()
+        if 'הושמטו' in msg:
+            again=st.button('לא כל ההגדרות נוצרו אנא הרץ פעם נוספת')
+            if again:
+                get_url(url)
+        st.write(msg)
+    except AttributeError:
+        pass
 
 def main():
     '''
