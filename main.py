@@ -16,7 +16,6 @@ async def run(playwright,words=None,url=None) -> None:
     browser =  await playwright.firefox.launch(headless=True)
     context =  await browser.new_context()
     page =  await context.new_page()
-    print('url=',url)
     if url is None:
          await page.goto("https://geek.co.il/~mooffie/crossword/")
          await page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").press("ControlOrMeta+a")
