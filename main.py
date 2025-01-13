@@ -1,38 +1,42 @@
 import os
+from nturl2path import url2pathname
+
 os.system("playwright install")
 os.system("playwright install-deps")
 import st_pages
 import requests,string,os,html5lib
 from bs4 import BeautifulSoup
 import time,streamlit as st
-from playwright.sync_api import Playwright, sync_playwright
+# from playwright.sync_api import Playwright, sync_playwright
+import asyncio
+from playwright.async_api import async_playwright
 
 
-
-def run(playwright:Playwright,words=None,url=None) -> None:
-    browser =  playwright.firefox.launch(headless=False)
-    context =  browser.new_context()
-    page =  context.new_page()
+async def run(playwright,words=None,url=None) -> None:
+    browser =  await playwright.firefox.launch(headless=True)
+    context =  await browser.new_context()
+    page =  await context.new_page()
+    print('url=',url)
     if url is None:
-         page.goto("https://geek.co.il/~mooffie/crossword/")
-         page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").press("ControlOrMeta+a")
-         page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").fill(words)
-         page.get_by_role("button", name="בנה את התשבץ").click()
-         page.get_by_role("button", name="צוֹר קישור").click()
+         await page.goto("https://geek.co.il/~mooffie/crossword/")
+         await page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").press("ControlOrMeta+a")
+         await page.get_by_text("אנטיביוטיקה - תרופה המשמידה חיידקים קריקטורה - ציור הומוריסטי").fill(words)
+         await page.get_by_role("button", name="בנה את התשבץ").click()
+         await page.get_by_role("button", name="צוֹר קישור").click()
     else:
-         page.goto(url)
-         page.get_by_role("button", name="ההצעה הבאה").click()
-         page.get_by_role("button", name="צוֹר קישור").click()
-    url=page.url
+         await page.goto(url)
+         await page.get_by_role("button", name="ההצעה הבאה").click()
+         await page.get_by_role("button", name="צוֹר קישור").click()
+    url= page.url
     # ---------------------
-    context.close()
-    browser.close()
+    await context.close()
+    await browser.close()
     return url
 
-def get_url(words=None,cond=None):
-    st.write('words=',words,'cond=',cond)
-    with sync_playwright() as playwright:
-        url =  run(playwright, words,cond)
+async def get_url(words=None,cond=None):
+    # st.write('cond=',await cond)
+    async with async_playwright() as playwright:
+        url =  await run(playwright, words,cond)
         return url
 
 def progress():
@@ -45,27 +49,27 @@ def progress():
     my_bar.empty()
 
 
-@st.cache_data
+# @st.cache_data
 def set_session_state(url):
     if 'url' not in st.session_state:
         st.session_state.url=url
     else:
         st.session_state.url = url
 
-def get_msg(url):
-    r =  requests.get(url)
+async def get_msg(url):
+    r = requests.get(url)
     soup = BeautifulSoup(r.content,'html5lib')  # If this line causes an error, run 'pip install html5lib' or install html5lib
     try:
         msg=soup.find('div',attrs={'class':"messages warning"}).get_text()
         if 'הושמטו' in msg:
             again=st.button('לא כל ההגדרות נוצרו אנא הרץ פעם נוספת')
             if again:
-                get_url(cond=url)
+                await get_url(cond=url)
         st.write(msg)
     except AttributeError:
         pass
 
-def main():
+async def main():
     '''
     Run playwrite to make cross creation automatic.
     Suppressed, have to create cross in advance, using send link option.
@@ -102,13 +106,15 @@ def main():
                 set_session_state(url)
                 st.info('!הקישור נשלח בהצלחה')
     if kovets is not None:
-        url= get_url(words=kovets,cond=None)
+        url= await get_url(words=kovets,cond=None)
         st.write(url)
-        get_msg(url)
+        await get_msg(url)
         progress()
         if url:
             set_session_state(url)
             # st.write(url)
 
 if __name__=='__main__':
-    main()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(main())
