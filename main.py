@@ -102,7 +102,7 @@ def main():
                 set_session_state(url)
                 st.info('!הקישור נשלח בהצלחה')
     if kovets is not None:
-        url= get_url(kovets)
+        url= get_url(words=kovets,cond=None)
         get_msg(url)
         progress()
         if url:
