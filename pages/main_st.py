@@ -318,15 +318,15 @@ def del_ref():
     ref.delete()
 
 def main():
-    # st.set_page_config(
-    #     layout="wide",
-    #     page_title="פתור תשבץ",
-    #     page_icon="🤔",
-    # )
-    # st_pages.show_pages([
-    #     st_pages.Page("main.py", "צור תשבץ", "🏁"),
-    #     st_pages.Page("pages/main_st.py", "פתור תשבץ", "🤔"),
-    # ])
+    st.set_page_config(
+        layout="wide",
+        page_title="פתור תשבץ",
+        page_icon="🤔",
+    )
+    st_pages.show_pages([
+        st_pages.Page("main.py", "צור תשבץ", "🏁"),
+        st_pages.Page("pages/main_st.py", "פתור תשבץ", "🤔"),
+    ])
     tab1, tab2 = st.tabs(['פתור תשבץ', 'דירוג משתמשים'])
     # Eliminate st.session_state url not declared bug.
     try:
