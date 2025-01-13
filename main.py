@@ -59,7 +59,7 @@ def get_msg(url):
         if 'הושמטו' in msg:
             again=st.button('לא כל ההגדרות נוצרו אנא הרץ פעם נוספת')
             if again:
-                get_url(url)
+                get_url(cond=url)
         st.write(msg)
     except AttributeError:
         pass
