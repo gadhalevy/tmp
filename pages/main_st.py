@@ -5,7 +5,6 @@ import requests,string,os
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
-from playsound3 import playsound
 from streamlit_searchbox import st_searchbox
 import firebase_admin
 from firebase_admin import credentials
