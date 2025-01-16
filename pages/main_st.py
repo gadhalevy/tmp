@@ -5,6 +5,7 @@ import requests,string,os
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
+from playsound3 import playsound
 from streamlit_searchbox import st_searchbox
 import firebase_admin
 from firebase_admin import credentials
@@ -310,8 +311,12 @@ def show_res(col3):
     scores=list(dic.values())
     colors=['red','green','blue','orange','violet']
     for i in range(len(keys)):
-        num= '#' * (7-int(scores[i]))
+        if int(scores[i])>6:
+            num='#'
+        else:
+            num= '#' * (7-int(scores[i]))
         col3.write(f' {num}  :{colors[i % len(colors)]}[{keys[i]} {scores[i]}]')
+        # col3.markdown(f'  <div font-face=font-family:DanaYadAlefAlefAlef;font-style:normal;src:fonts/DanaYadAlefAlefAlef-Normal.otf;color:blue;>{keys[i]} {scores[i]}</div>',unsafe_allow_html=True)
 
 def del_ref():
     ref=db.reference('/cross/scores/')
@@ -341,15 +346,8 @@ def main():
                     st.session_state.cross=tashbets
                 df = make_df(url)
                 hor, ver = clues(url)
-                # for i in (ver,hor):
-                #     find_indxs(i)
                 find_indxs(hor,'hor')
                 find_indxs(ver, 'ver')
-                # st.write(st.session_state.v_idxs)
-                # st.write(st.session_state.h_idxs)
-                # Playground not activated
-                # if (len(df))<int(st.session_state.length):
-                #     st.info('לא כל ההגדרות הושמו בתשבץ חזור למסך קודם וטען קובץ פעם נוספת')
                 kivun=st.sidebar.radio('בחר כיוון',['מאוזן','מאונך'])
                 st.sidebar.header(kivun)
                 slider=st.sidebar.empty()
@@ -363,11 +361,11 @@ def main():
                     process(ver,slider,writer,df,user_input,btn,'ver')
                 pitaronot=st.sidebar.checkbox('?האם להציג פיתרונות')
                 col1,col2=st.columns([10,1])
-                styled = st.session_state.cross.style.set_table_styles([{'selector': '', 'props': 'color: blue;font-weight:bold;font-size:1.5em;'}],overwrite=False)
+                styled = st.session_state.cross.style.set_table_styles([{'selector': '', 'props': 'color: blue;font-weight:bold;font-size:1.5em;border-style:solid;border-width:thick;'}],overwrite=False)
                 styled=styled.apply(hilight).hide().hide(axis="columns")
+                styled=styled.set_table_styles([{'selector': 'td', 'props': 'border-style:solid;border-width:thick;height:2em;width:2em;'}],overwrite=False)
                 # Styler not fully implemented in streamlit, switch to html.
                 col1.markdown(styled.to_html(), unsafe_allow_html=True)
-                # col1.dataframe(styled,height=38 * len(tashbets), hide_index=True)
                 if pitaronot:
                     col2.info('|'.join(df['answers'].values))
         with tab2:
@@ -388,6 +386,7 @@ def main():
             if col3.button('סיום',type='primary'):
                 show_res(col3)
                 st_lottie('https://lottie.host/ea1fa0a7-3547-458d-868e-b14f85b8d82d/rTfCy1CzPo.json',height=800,width=1200)
+                playsound('assets/sounds/victory.mp3')
                 del_ref()
     # Complains about session_state.url
     except AttributeError:
