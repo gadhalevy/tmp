@@ -386,7 +386,7 @@ def main():
             if col3.button('סיום',type='primary'):
                 show_res(col3)
                 st_lottie('https://lottie.host/ea1fa0a7-3547-458d-868e-b14f85b8d82d/rTfCy1CzPo.json',height=800,width=1200)
-                playsound('assets/sounds/victory.mp3')
+                st.audio('assets/sounds/victory.mp3',autoplay=True)
                 del_ref()
     # Complains about session_state.url
     except AttributeError:
