@@ -5,12 +5,15 @@ import requests,string,os
 from bs4 import BeautifulSoup
 import time,streamlit as st
 import pandas as pd, numpy as np
+import streamlit.components.v1 as components
 from streamlit_searchbox import st_searchbox
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 from streamlit_lottie import st_lottie
 import st_pages
+import stat
+import base64
 
 @st.cache_resource()
 def init():
@@ -25,6 +28,36 @@ def init():
     cred = credentials.Certificate(dict(st.secrets['fb']))
     # cred = credentials.Certificate('fb_key.json')
     firebase_admin.initialize_app(cred, {'databaseURL': 'https://Lab9-c9743.firebaseio.com/'})
+
+def set_bg(url):
+    """
+    Sets the background image of the Streamlit app.
+
+    Args:
+      url (str): The URL of the image.
+    """
+
+    st.markdown(f"""
+  <style>
+  .stApp {{
+    background-image: url('{url}');
+    background-size: cover;
+  }}
+  </style>
+  """, unsafe_allow_html=True)
+
+def change_label_style(label, font_size='20px', font_color='black', font_family='sans-serif',font_weight='normal'):
+    html = f"""
+    <script>
+        var elems = window.parent.document.querySelectorAll('p');
+        var elem = Array.from(elems).find(x => x.innerText == '{label}');
+        elem.style.fontSize = '{font_size}';
+        elem.style.fontWeight= '{font_weight}'
+        elem.style.color = '{font_color}';
+        elem.style.fontFamily = '{font_family}';
+    </script>
+    """
+    components.html(html)
 
 @st.cache_data
 def set_places(url=None):
@@ -303,19 +336,72 @@ def get_scores(poter):
     new_ref.set(val)
 
 def show_res(col3):
-    ref=db.reference(f'/cross/scores/')
-    tmp=ref.get()
-    dic=dict(sorted(tmp.items(), key=lambda item: item[1],reverse=True))
-    keys=list(dic.keys())
-    scores=list(dic.values())
-    colors=['red','green','blue','orange','violet']
-    for i in range(len(keys)):
-        if int(scores[i])>6:
-            num='#'
-        else:
-            num= '#' * (7-int(scores[i]))
-        col3.write(f' {num}  :{colors[i % len(colors)]}[{keys[i]} {scores[i]}]')
-        # col3.markdown(f'  <div font-face=font-family:DanaYadAlefAlefAlef;font-style:normal;src:fonts/DanaYadAlefAlefAlef-Normal.otf;color:blue;>{keys[i]} {scores[i]}</div>',unsafe_allow_html=True)
+    ref = db.reference(f'/cross/scores/')
+    tmp = ref.get()
+    dic = dict(sorted(tmp.items(), key=lambda item: item[1], reverse=True))
+    keys = list(dic.keys())
+    scores = list(dic.values())
+    colors = ['green', 'blue', 'orange', 'violet', 'red','grey','purple','brown','magenta','cyan','navy','aquamarine','coral','gold','indigo','khaki','lime','maroon','olive','pink','salmon','tan','teal','tomato','turquoise','violet','wheat']
+    try:
+        with open('static/fonts/RubikWetPaint-Regular.ttf', 'rb') as font_file:
+            font_data = font_file.read()
+            font_base64 = base64.b64encode(font_data).decode()
+    except FileNotFoundError:
+        st.error("Font file not found!")
+        return
+    col3.markdown(f"""
+    <style>
+    @font-face {{
+        font-family: 'RubikWetPaint';
+        src: url(data:font/ttf;base64,{font_base64});
+    }}
+    .score-text {{
+        font-family: 'RubikWetPaint', Arial, sans-serif !important;
+        direction: rtl;
+        text-align: right;
+        padding: 5px;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+    def score_generator():
+        for i,k in enumerate(dic.items()):
+            yield f' {(i+1) * '#'} :{colors[i]}[{k[0]} {k[1]}] \n'
+        #     yield  col3.markdown(
+        #     f'<p class="score-text" style="font-size:{k[1]*0.4+2}em; '
+        #     f'color:{colors[i % len(colors)]};">'
+        #     f'{k[0]} {k[1]}'
+        #     f'</p>',
+        #     unsafe_allow_html=True
+        # )
+            time.sleep(1.5)
+    col3.write_stream(score_generator)
+    
+        
+        
+        
+        
+        # col3.markdown(
+        #     f'<p class="score-text" style="font-size:{v*0.4+2}em; '
+        #     f'color:{colors[k % len(colors)]};">'
+        #     f'{k} {v}'
+        #     f'</p>',
+        #     unsafe_allow_html=True
+        # )
+   
+        
+    # # Apply global styling with custom font
+    
+    
+    # for k in range(len(keys)):
+    #     col3.markdown(
+    #         f'<p class="score-text" style="font-size:{scores[k]*0.4+2}em; '
+    #         f'color:{colors[k % len(colors)]};">'
+    #         f'{keys[k]} {scores[k]}'
+    #         f'</p>',
+    #         unsafe_allow_html=True
+    # )
+    
+    st.snow()
 
 def del_ref():
     ref=db.reference('/cross/scores/')
@@ -331,13 +417,18 @@ def main():
         st_pages.Page("main.py", "צור תשבץ", "🏁"),
         st_pages.Page("pages/main_st.py", "פתור תשבץ", "🤔"),
     ])
-    tab1, tab2 = st.tabs(['פתור תשבץ', 'דירוג משתמשים'])
+    set_bg('https://iris-bs.co.il/wp-content/uploads/2021/01/100111.jpg')
+    label1 = 'פתור תשבץ'
+    label2 = 'דירוג משתמשים'
+    tab1, tab2 = st.tabs([label1, label2])
+    change_label_style(label1, '20px', font_color='blue')
+    change_label_style(label2, '20px', font_color='brown')
     # Eliminate st.session_state url not declared bug.
     try:
         with tab1:
             # if 'url' in st.session_state:
             #     st.session_state.url=st.session_state.url
-            st.write(st.session_state.url)
+            # st.write(st.session_state.url)
             url=st.session_state.url
             if url:
                 tashbets,rows,cols = build_df(url)
@@ -385,8 +476,9 @@ def main():
             if col3.button('סיום',type='primary'):
                 show_res(col3)
                 st_lottie('https://lottie.host/ea1fa0a7-3547-458d-868e-b14f85b8d82d/rTfCy1CzPo.json',height=800,width=1200)
-                st.audio('assets/sounds/victory.mp3',autoplay=True,loop=True,start_time=0,end_time=26)
+                st.audio('static/sounds/victory.mp3',autoplay=True,loop=True,start_time=0,end_time=26)
                 del_ref()
+                st.balloons()
     # Complains about session_state.url
     except AttributeError:
         pass

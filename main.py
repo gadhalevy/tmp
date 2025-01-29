@@ -11,6 +11,22 @@ import time,streamlit as st
 import asyncio
 from playwright.async_api import async_playwright
 
+def set_bg(url):
+    """
+    Sets the background image of the Streamlit app.
+
+    Args:
+      url (str): The URL of the image.
+    """
+
+    st.markdown(f"""
+  <style>
+  .stApp {{
+    background-image: url('{url}');
+    background-size: cover;
+  }}
+  </style>
+  """, unsafe_allow_html=True)
 
 async def run(playwright,words=None,url=None) -> None:
     browser =  await playwright.firefox.launch(headless=True)
@@ -85,6 +101,7 @@ async def main():
         st_pages.Page("main.py", "צור תשבץ", "🏁"),
         st_pages.Page("pages/main_st.py", "פתור תשבץ", "🤔"),
     ])
+    set_bg('https://iris-bs.co.il/wp-content/uploads/2021/01/100111.jpg')
     kovets=None
     ofen=st.sidebar.radio('בחר אופן יצירת התשבץ',('העלאת קובץ','יצירה במקום','קישור ישיר'),index=2)
     if ofen=='העלאת קובץ':
