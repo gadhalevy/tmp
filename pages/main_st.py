@@ -342,27 +342,27 @@ def show_res(col3):
     keys = list(dic.keys())
     scores = list(dic.values())
     colors = ['green', 'blue', 'orange', 'violet', 'red','grey','purple','brown','magenta','cyan','navy','aquamarine','coral','gold','indigo','khaki','lime','maroon','olive','pink','salmon','tan','teal','tomato','turquoise','violet','wheat']
-    try:
-        with open('static/fonts/RubikWetPaint-Regular.ttf', 'rb') as font_file:
-            font_data = font_file.read()
-            font_base64 = base64.b64encode(font_data).decode()
-    except FileNotFoundError:
-        st.error("Font file not found!")
-        return
-    col3.markdown(f"""
-    <style>
-    @font-face {{
-        font-family: 'RubikWetPaint';
-        src: url(data:font/ttf;base64,{font_base64});
-    }}
-    .score-text {{
-        font-family: 'RubikWetPaint', Arial, sans-serif !important;
-        direction: rtl;
-        text-align: right;
-        padding: 5px;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
+    # try:
+    #     with open('static/fonts/RubikWetPaint-Regular.ttf', 'rb') as font_file:
+    #         font_data = font_file.read()
+    #         font_base64 = base64.b64encode(font_data).decode()
+    # except FileNotFoundError:
+    #     st.error("Font file not found!")
+    #     return
+    # col3.markdown(f"""
+    # <style>
+    # @font-face {{
+    #     font-family: 'RubikWetPaint';
+    #     src: url(data:font/ttf;base64,{font_base64});
+    # }}
+    # .score-text {{
+    #     font-family: 'RubikWetPaint', Arial, sans-serif !important;
+    #     direction: rtl;
+    #     text-align: right;
+    #     padding: 5px;
+    # }}
+    # </style>
+    # """, unsafe_allow_html=True)
     def score_generator():
         for i,k in enumerate(dic.items()):
             yield f' {(i+1) * '#'} :{colors[i]}[{k[0]} {k[1]}] \n'
