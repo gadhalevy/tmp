@@ -12,4 +12,3 @@ streamlit-searchbox
 firebase-admin
 streamlit-lottie
 st-pages==0.4.0
-playsound3
