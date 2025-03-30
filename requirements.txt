@@ -4,7 +4,7 @@ beautifulsoup4
 pandas
 html5lib
 numpy
-streamlit
+streamlit==1.41.1
 selenium
 webdriver-manager
 google_crc32c
