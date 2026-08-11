@@ -1,14 +1,2 @@
-playwright
-requests
-beautifulsoup4
-pandas
-html5lib
-numpy
-streamlit==1.41.1
-selenium
-webdriver-manager
-google_crc32c
-streamlit-searchbox
 firebase-admin
-streamlit-lottie
-st-pages==0.4.0
+
