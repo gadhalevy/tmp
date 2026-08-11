@@ -15,7 +15,6 @@ import json
 import random
 import re
 import os
-import webbrowser
 import datetime
 
 # ---------------------------------------------------------------------------
@@ -84,6 +83,7 @@ def init_firebase():
     # Always use Streamlit Secrets on Cloud
     if "firebase" in st.secrets:
         cred_dict = dict(st.secrets["firebase"])
+        cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
         cred = credentials.Certificate(cred_dict)
     else:
         # Local development only
@@ -578,24 +578,25 @@ def restore_numbers(cross_df, placements, num_grid):
     - תאים שכל הגדרותיהם מולאו: מציג אות בלבד.
     """
     for (r, c), nums in num_grid.items():
-        cell = cross_df.iloc[r, c]
+        cell   = cross_df.iloc[r, c]
         letter = get_cell_letter(cell)
 
-        # מצא מספרים של הגדרות שטרם מולאו
         active_nums = []
         for num in nums:
-            # מצא את המילה המתאימה
-            for p_word, pr, pc, p_hor, p_num, _ in placements:
-                if p_num == num and pr == r and pc == c:
-                    if not is_word_filled(cross_df, p_word, r, c, p_hor):
-                        active_nums.append(num)
-                    break
+            matching = [
+                (p_word, p_hor)
+                for p_word, pr, pc, p_hor, p_num, _ in placements
+                if p_num == num and pr == r and pc == c
+            ]
+            if any(not is_word_filled(cross_df, p_word, r, c, p_hor)
+                   for p_word, p_hor in matching):
+                active_nums.append(num)
 
         if active_nums:
             nums_str = "/".join(str(n) for n in sorted(active_nums))
-            cross_df.iloc[r, c] = nums_str + letter  # e.g. "9נ" or "9/12נ"
+            cross_df.iloc[r, c] = nums_str + letter
         elif letter:
-            cross_df.iloc[r, c] = letter  # רק אות, הגדרות מולאו
+            cross_df.iloc[r, c] = letter
     return cross_df
 
 
