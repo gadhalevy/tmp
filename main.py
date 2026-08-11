@@ -76,27 +76,21 @@ FIREBASE_BUCKET = "hegyonit.firebasestorage.app"
 
 @st.cache_resource()
 def init_firebase():
-    """
-    מאתחל Firebase.
-    ב-Streamlit Community Cloud: credentials נטענים מ-st.secrets["firebase"].
-    בסביבה מקומית: נטענים מקובץ .streamlit/fb_cred.json.
-    """
     try:
         firebase_admin.delete_app(firebase_admin.get_app())
     except ValueError:
         pass
 
-    try:
-        # Try Streamlit Secrets first (Streamlit Cloud)
+    # Always use Streamlit Secrets on Cloud
+    if "firebase" in st.secrets:
         cred_dict = dict(st.secrets["firebase"])
-        cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
         cred = credentials.Certificate(cred_dict)
-    except (KeyError, FileNotFoundError):
-        # Fallback: local JSON file
+    else:
+        # Local development only
         cred = credentials.Certificate(".streamlit/fb_cred.json")
 
     firebase_admin.initialize_app(cred, {
-        "databaseURL":   FIREBASE_DB_URL,
+        "databaseURL": FIREBASE_DB_URL,
         "storageBucket": FIREBASE_BUCKET,
     })
 
