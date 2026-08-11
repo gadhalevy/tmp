@@ -1,4 +1,5 @@
 firebase-admin
 numpy
 pandas
+streamlit
 
