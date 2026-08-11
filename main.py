@@ -70,23 +70,35 @@ def set_bg(url):
 # ---------------------------------------------------------------------------
 # Firebase
 # ---------------------------------------------------------------------------
-FIREBASE_CRED_PATH  = ".streamlit/fb_cred.json"
-FIREBASE_DB_URL     = "https://hegyonit-default-rtdb.europe-west1.firebasedatabase.app/"
-FIREBASE_BUCKET     = "hegyonit.firebasestorage.app"
+FIREBASE_DB_URL = "https://hegyonit-default-rtdb.europe-west1.firebasedatabase.app/"
+FIREBASE_BUCKET = "hegyonit.firebasestorage.app"
 
 
 @st.cache_resource()
 def init_firebase():
+    """
+    מאתחל Firebase.
+    ב-Streamlit Community Cloud: credentials נטענים מ-st.secrets["firebase"].
+    בסביבה מקומית: נטענים מקובץ .streamlit/fb_cred.json.
+    """
     try:
         firebase_admin.delete_app(firebase_admin.get_app())
     except ValueError:
         pass
-    cred = credentials.Certificate(FIREBASE_CRED_PATH)
+
+    try:
+        # Try Streamlit Secrets first (Streamlit Cloud)
+        cred_dict = dict(st.secrets["firebase"])
+        cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
+        cred = credentials.Certificate(cred_dict)
+    except (KeyError, FileNotFoundError):
+        # Fallback: local JSON file
+        cred = credentials.Certificate(".streamlit/fb_cred.json")
+
     firebase_admin.initialize_app(cred, {
         "databaseURL":   FIREBASE_DB_URL,
         "storageBucket": FIREBASE_BUCKET,
     })
-
 
 def get_subjects():
     # DB structure: /{subject}/... — subjects are top-level keys
