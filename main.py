@@ -94,12 +94,34 @@ def init_firebase():
         "storageBucket": FIREBASE_BUCKET,
     })
 
+def _get_hidden_subjects() -> set:
+    """
+    Reads config/hidden.txt from Firebase Storage.
+    Each line is a subject name to hide from users.
+    Returns an empty set if the file doesn't exist or can't be read.
+    """
+    try:
+        bucket = storage.bucket()
+        blob   = bucket.blob("config/hidden.txt")
+        if not blob.exists():
+            return set()
+        text = blob.download_as_text(encoding="utf-8")
+        return {line.strip() for line in text.splitlines() if line.strip()}
+    except Exception:
+        return set()
+
+
 def get_subjects():
-    # DB structure: /{subject}/... — subjects are top-level keys
-    ref = db.reference("/")
+    """
+    Returns subjects from Realtime DB, excluding any listed in config/hidden.txt.
+    To hide a subject: add its name to hidden.txt in Firebase Storage (one per line).
+    Changes take effect immediately on next page load.
+    """
+    hidden = _get_hidden_subjects()
+    ref  = db.reference("/")
     data = ref.get()
     if data:
-        return list(data.keys())
+        return [k for k in data.keys() if k not in hidden]
     return []
 
 
